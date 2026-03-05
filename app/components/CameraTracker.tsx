@@ -128,7 +128,8 @@ export const CameraTracker = ({
           ref={webcamRef}
           onUserMedia={handleVideoLoad}
           onUserMediaError={handleCameraError}
-          className="absolute w-full h-full object-cover"
+          className="absolute inset-0 z-[1] w-full h-full object-cover"
+          style={{ objectFit: "cover" }}
           mirrored={false}
           audio={false}
           playsInline
@@ -143,7 +144,7 @@ export const CameraTracker = ({
       {/* MediaPipe Canvas Overlay — dimensions match the actual video stream */}
       <canvas
         ref={canvasRef}
-        className="absolute w-full h-full object-cover z-10"
+        className="absolute inset-0 z-[2] w-full h-full object-cover"
         width={canvasSize.width}
         height={canvasSize.height}
       />
