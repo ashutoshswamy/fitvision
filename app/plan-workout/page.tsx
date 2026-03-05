@@ -479,22 +479,16 @@ function PlanWorkoutContent() {
               Dashboard
             </Link>
             <Link
-              href="/workouts"
+              href="/#philosophy"
               className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              Workouts
+              Philosophy
             </Link>
             <Link
-              href="/history"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300 flex items-center gap-1.5"
+              href="/#process"
+              className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              <History className="w-3.5 h-3.5" /> History
-            </Link>
-            <Link
-              href="/tracker"
-              className="text-muted-clay hover:text-terracotta transition-colors duration-300 flex items-center gap-2"
-            >
-              Studio <ArrowRight className="w-4 h-4" />
+              Method
             </Link>
             <button
               onClick={async () => {
@@ -535,25 +529,18 @@ function PlanWorkoutContent() {
                   Dashboard
                 </Link>
                 <Link
-                  href="/workouts"
+                  href="/#philosophy"
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  Workouts
+                  Philosophy
                 </Link>
                 <Link
-                  href="/history"
+                  href="/#process"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1 flex items-center gap-1.5"
+                  className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  <History className="w-3.5 h-3.5" /> History
-                </Link>
-                <Link
-                  href="/tracker"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-muted-clay hover:text-terracotta transition-colors py-1 flex items-center gap-2"
-                >
-                  Studio <ArrowRight className="w-4 h-4" />
+                  Method
                 </Link>
                 <div className="pt-2 border-t border-warm-sand/30">
                   <button

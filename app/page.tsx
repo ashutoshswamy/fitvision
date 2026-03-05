@@ -186,8 +186,8 @@ export default function Home() {
             className="object-cover object-center"
             priority
           />
-          <div className="absolute inset-y-0 left-0 w-full lg:w-2/3 bg-gradient-to-r from-parchment via-parchment/90 to-transparent"></div>
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-parchment to-transparent"></div>
+          <div className="absolute inset-y-0 left-0 w-full lg:w-1/2 bg-gradient-to-r from-parchment/90 via-parchment/60 to-transparent"></div>
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-parchment/80 to-transparent"></div>
         </div>
 
         <div className="relative z-10 w-full max-w-[90rem] mx-auto px-6 md:px-12 pt-32 pb-16">

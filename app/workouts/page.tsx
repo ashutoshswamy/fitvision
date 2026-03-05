@@ -60,38 +60,22 @@ export default function WorkoutsPage() {
           </Link>
           <div className="hidden md:flex items-center gap-6 lg:gap-10 text-xs tracking-[0.2em] uppercase font-medium">
             <Link
-              href="/"
+              href={isSignedIn ? "/dashboard" : "/sign-in"}
               className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              Home
+              Dashboard
             </Link>
             <Link
-              href="/workouts"
-              className="text-charcoal transition-colors duration-300"
+              href="/#philosophy"
+              className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              Workouts
+              Philosophy
             </Link>
             <Link
-              href="/suggestions"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300 flex items-center gap-1.5"
+              href="/#process"
+              className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              AI Suggestions
-            </Link>
-            {isSignedIn && (
-              <Link
-                href="/history"
-                className="text-driftwood hover:text-charcoal transition-colors duration-300 flex items-center gap-1.5"
-              >
-                <History className="w-3.5 h-3.5" />
-                History
-              </Link>
-            )}
-            <Link
-              href={isSignedIn ? "/dashboard" : "/tracker"}
-              className="text-muted-clay hover:text-terracotta transition-colors duration-300 flex items-center gap-2"
-            >
-              {isSignedIn ? "Dashboard" : "Studio"}{" "}
-              <ArrowRight className="w-4 h-4" />
+              Method
             </Link>
             {isSignedIn ? (
               <button
@@ -134,42 +118,25 @@ export default function WorkoutsPage() {
             >
               <div className="flex flex-col gap-4 pt-6 pb-4 text-xs tracking-[0.2em] uppercase font-medium">
                 <Link
-                  href="/"
+                  href={isSignedIn ? "/dashboard" : "/sign-in"}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  Home
+                  Dashboard
                 </Link>
                 <Link
-                  href="/workouts"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-charcoal py-1"
-                >
-                  Workouts
-                </Link>
-                <Link
-                  href="/suggestions"
+                  href="/#philosophy"
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  AI Suggestions
+                  Philosophy
                 </Link>
-                {isSignedIn && (
-                  <Link
-                    href="/history"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-driftwood hover:text-charcoal transition-colors py-1 flex items-center gap-1.5"
-                  >
-                    <History className="w-3.5 h-3.5" /> History
-                  </Link>
-                )}
                 <Link
-                  href={isSignedIn ? "/dashboard" : "/tracker"}
+                  href="/#process"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-muted-clay hover:text-terracotta transition-colors py-1 flex items-center gap-2"
+                  className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  {isSignedIn ? "Dashboard" : "Studio"}{" "}
-                  <ArrowRight className="w-4 h-4" />
+                  Method
                 </Link>
                 <div className="pt-2 border-t border-warm-sand/30">
                   {isSignedIn ? (
@@ -208,7 +175,7 @@ export default function WorkoutsPage() {
             className="flex items-center gap-4 text-[10px] text-sage tracking-[0.3em] font-semibold uppercase mb-4 sm:mb-6"
           >
             <span className="w-8 h-px bg-sage"></span>
-            <span>MediaPipe Pose Tracking</span>
+            <span>Real-Time Pose Tracking</span>
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

@@ -14,7 +14,7 @@ const sections = [
   {
     title: "Not Medical Advice",
     content:
-      "The exercise suggestions, posture corrections, and AI-generated recommendations provided through FitVision — including those powered by Google Gemini — should not be considered medical advice. Always consult with a qualified healthcare professional, physician, or certified fitness trainer before starting any new exercise program, especially if you have pre-existing health conditions, injuries, or concerns about your physical capability.",
+      "The exercise suggestions, posture corrections, and AI-generated recommendations provided through FitVision should not be considered medical advice. Always consult with a qualified healthcare professional, physician, or certified fitness trainer before starting any new exercise program, especially if you have pre-existing health conditions, injuries, or concerns about your physical capability.",
   },
   {
     title: "Assumption of Risk",
@@ -24,12 +24,12 @@ const sections = [
   {
     title: "AI Accuracy Limitations",
     content:
-      "FitVision uses on-device computer vision (MediaPipe Pose) and AI language models (Google Gemini) to provide feedback. While we strive for accuracy, these technologies have inherent limitations. Pose detection may be affected by lighting conditions, camera quality, clothing, or body positioning. AI-generated exercise suggestions are general in nature and may not account for your specific health circumstances.",
+      "FitVision uses on-device computer vision and AI language models to provide feedback. While we strive for accuracy, these technologies have inherent limitations. Pose detection may be affected by lighting conditions, camera quality, clothing, or body positioning. AI-generated exercise suggestions are general in nature and may not account for your specific health circumstances.",
   },
   {
     title: "Privacy & Data Processing",
     content:
-      "Pose tracking is performed entirely on your device — no video or image data leaves your browser. However, when using the AI Suggestions feature, text-based health information you provide is sent to Google's Gemini API for processing. We do not store this information on our servers. Please refer to Google's privacy policy for details on how they handle API data.",
+      "Pose tracking is performed entirely on your device — no video or image data leaves your browser. However, when using the AI Suggestions feature, text-based health information you provide is sent to our AI service for processing. We do not store this information on our servers.",
   },
   {
     title: "No Guarantees",
@@ -71,13 +71,26 @@ export default function DisclaimerPage() {
               FitVision
             </span>
           </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-medium text-driftwood hover:text-charcoal transition-colors duration-300"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
+          <div className="flex items-center gap-6 lg:gap-10 text-xs tracking-[0.2em] uppercase font-medium">
+            <Link
+              href="/"
+              className="text-driftwood hover:text-charcoal transition-colors duration-300"
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/#philosophy"
+              className="text-driftwood hover:text-charcoal transition-colors duration-300"
+            >
+              Philosophy
+            </Link>
+            <Link
+              href="/#process"
+              className="text-driftwood hover:text-charcoal transition-colors duration-300"
+            >
+              Method
+            </Link>
+          </div>
         </div>
       </motion.nav>
 

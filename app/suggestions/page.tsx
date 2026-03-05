@@ -254,28 +254,22 @@ export default function SuggestionsPage() {
           </Link>
           <div className="hidden md:flex items-center gap-6 lg:gap-10 text-xs tracking-[0.2em] uppercase font-medium">
             <Link
-              href="/"
+              href={isSignedIn ? "/dashboard" : "/sign-in"}
               className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              Home
+              Dashboard
             </Link>
             <Link
-              href="/workouts"
+              href="/#philosophy"
               className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              Workouts
+              Philosophy
             </Link>
             <Link
-              href="/suggestions"
-              className="text-charcoal transition-colors duration-300"
+              href="/#process"
+              className="text-driftwood hover:text-charcoal transition-colors duration-300"
             >
-              AI Suggestions
-            </Link>
-            <Link
-              href="/tracker"
-              className="text-muted-clay hover:text-terracotta transition-colors duration-300 flex items-center gap-2"
-            >
-              Studio <ArrowRight className="w-4 h-4" />
+              Method
             </Link>
             {isSignedIn ? (
               <button
@@ -318,32 +312,25 @@ export default function SuggestionsPage() {
             >
               <div className="flex flex-col gap-4 pt-6 pb-4 text-xs tracking-[0.2em] uppercase font-medium">
                 <Link
-                  href="/"
+                  href={isSignedIn ? "/dashboard" : "/sign-in"}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  Home
+                  Dashboard
                 </Link>
                 <Link
-                  href="/workouts"
+                  href="/#philosophy"
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  Workouts
+                  Philosophy
                 </Link>
                 <Link
-                  href="/suggestions"
+                  href="/#process"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-charcoal py-1"
+                  className="text-driftwood hover:text-charcoal transition-colors py-1"
                 >
-                  AI Suggestions
-                </Link>
-                <Link
-                  href="/tracker"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-muted-clay hover:text-terracotta transition-colors py-1 flex items-center gap-2"
-                >
-                  Studio <ArrowRight className="w-4 h-4" />
+                  Method
                 </Link>
                 <div className="pt-2 border-t border-warm-sand/30">
                   {isSignedIn ? (
@@ -383,7 +370,7 @@ export default function SuggestionsPage() {
           >
             <span className="w-8 h-px bg-terracotta" />
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Powered by Google Gemini</span>
+            <span>AI-Powered Insights</span>
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

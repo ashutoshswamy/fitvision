@@ -385,34 +385,24 @@ function TrackerContent() {
           </span>
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm tracking-widest uppercase font-medium">
-          {isSignedIn && (
-            <Link
-              href="/dashboard"
-              className="text-warm-sand hover:text-parchment transition-colors"
-            >
-              Dashboard
-            </Link>
-          )}
           <Link
-            href="/workouts"
+            href={isSignedIn ? "/dashboard" : "/sign-in"}
             className="text-warm-sand hover:text-parchment transition-colors"
           >
-            Workouts
+            Dashboard
           </Link>
           <Link
-            href="/tracker"
-            className="text-parchment hover:text-sage transition-colors"
+            href="/#philosophy"
+            className="text-warm-sand hover:text-parchment transition-colors"
           >
-            Studio
+            Philosophy
           </Link>
-          {isSignedIn && (
-            <Link
-              href="/history"
-              className="flex items-center gap-1.5 text-warm-sand hover:text-parchment transition-colors"
-            >
-              <History className="w-4 h-4" /> History
-            </Link>
-          )}
+          <Link
+            href="/#process"
+            className="text-warm-sand hover:text-parchment transition-colors"
+          >
+            Method
+          </Link>
           {isSignedIn ? (
             <button
               onClick={async () => {
@@ -420,7 +410,7 @@ function TrackerContent() {
               }}
               className="flex items-center gap-1.5 text-warm-sand hover:text-parchment transition-colors"
             >
-              <LogOut className="w-4 h-4" /> Sign Out
+              <LogOut className="w-4 h-4" /> Logout
             </button>
           ) : (
             <Link
@@ -455,38 +445,27 @@ function TrackerContent() {
             className="fixed top-14 left-0 right-0 z-50 bg-charcoal/95 backdrop-blur-md border-b border-driftwood/30 md:hidden"
           >
             <div className="flex flex-col gap-3 px-6 py-4 text-xs tracking-[0.2em] uppercase font-medium">
-              {isSignedIn && (
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-warm-sand hover:text-parchment transition-colors py-1"
-                >
-                  Dashboard
-                </Link>
-              )}
               <Link
-                href="/workouts"
+                href={isSignedIn ? "/dashboard" : "/sign-in"}
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-warm-sand hover:text-parchment transition-colors py-1"
               >
-                Workouts
+                Dashboard
               </Link>
               <Link
-                href="/tracker"
+                href="/#philosophy"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-parchment py-1"
+                className="text-warm-sand hover:text-parchment transition-colors py-1"
               >
-                Studio
+                Philosophy
               </Link>
-              {isSignedIn && (
-                <Link
-                  href="/history"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-warm-sand hover:text-parchment transition-colors py-1 flex items-center gap-1.5"
-                >
-                  <History className="w-3.5 h-3.5" /> History
-                </Link>
-              )}
+              <Link
+                href="/#process"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-warm-sand hover:text-parchment transition-colors py-1"
+              >
+                Method
+              </Link>
               {isSignedIn ? (
                 <button
                   onClick={async () => {
@@ -495,7 +474,7 @@ function TrackerContent() {
                   }}
                   className="flex items-center gap-1.5 text-warm-sand hover:text-parchment transition-colors py-1"
                 >
-                  <LogOut className="w-4 h-4" /> Sign Out
+                  <LogOut className="w-4 h-4" /> Logout
                 </button>
               ) : (
                 <Link
