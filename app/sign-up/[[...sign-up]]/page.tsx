@@ -51,7 +51,7 @@ export default function SignUpPage() {
         <SignUp
           appearance={{
             elements: {
-              rootBox: "w-full",
+              rootBox: "w-full flex justify-center",
               cardBox: "w-full shadow-none",
               card: "bg-linen/80 backdrop-blur-sm border border-warm-sand/30 shadow-xl shadow-charcoal/5 rounded-2xl p-6 w-full",
               headerTitle:
