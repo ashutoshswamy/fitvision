@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen bg-parchment flex items-center justify-center px-4 sm:px-6 py-20 sm:py-6 relative overflow-hidden">
+    <div className="min-h-screen bg-parchment flex flex-col items-center justify-center px-4 sm:px-6 py-20 sm:py-6 relative overflow-hidden">
       {/* Subtle background blobs */}
       <div className="absolute top-[-10%] right-[-5%] w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] rounded-full bg-sage/5 blur-3xl animate-blob" />
       <div
