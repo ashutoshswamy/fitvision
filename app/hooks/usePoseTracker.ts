@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ExerciseType } from "../lib/exercises";
+import { ExerciseType, EXERCISES, RepConfig } from "../lib/exercises";
+import { calculateAngle } from "../lib/engine/angleCalculator";
+import { createRepCounter, RepPhase } from "../lib/engine/repCounter";
 
 // Re-export for backward compatibility
 export type { ExerciseType } from "../lib/exercises";
@@ -11,21 +13,9 @@ interface PoseTrackerState {
   reps: number;
   feedback: string;
   precision: number;
+  phase: RepPhase;
+  primaryAngle: number;
 }
-
-const calculateAngle = (
-  a: { x: number; y: number },
-  b: { x: number; y: number },
-  c: { x: number; y: number },
-) => {
-  const radians =
-    Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
-  let angle = Math.abs((radians * 180.0) / Math.PI);
-  if (angle > 180.0) {
-    angle = 360 - angle;
-  }
-  return angle;
-};
 
 export const usePoseTracker = (
   videoElement: HTMLVideoElement | null,
@@ -37,12 +27,11 @@ export const usePoseTracker = (
     reps: 0,
     feedback: "Position yourself in the frame",
     precision: 0,
+    phase: "idle",
+    primaryAngle: 0,
   });
 
-  const repStateRef = useRef({
-    stage: "up", // 'up' or 'down'
-    count: 0,
-  });
+  const repCounterRef = useRef(createRepCounter());
 
   // Use a ref for exerciseType so onResults stays stable and
   // MediaPipe doesn't tear down / reinitialize on every switch.
@@ -51,11 +40,13 @@ export const usePoseTracker = (
 
   // Reset rep counter when the exercise changes
   useEffect(() => {
-    repStateRef.current = { stage: "up", count: 0 };
+    repCounterRef.current.reset();
     setState((prev) => ({
       ...prev,
       reps: 0,
       feedback: "Position yourself in the frame",
+      phase: "idle",
+      primaryAngle: 0,
     }));
   }, [exerciseType]);
 
@@ -100,6 +91,8 @@ export const usePoseTracker = (
 
         const landmarks = results.poseLandmarks;
         const currentExercise = exerciseTypeRef.current;
+        const exerciseDef = EXERCISES.find((e) => e.type === currentExercise);
+        const repConfig = exerciseDef?.repConfig;
 
         // Compute precision as average visibility of all 33 landmarks (0–100%)
         const avgVisibility =
@@ -109,707 +102,109 @@ export const usePoseTracker = (
           ) / landmarks.length;
         const precision = Math.round(avgVisibility * 100);
 
-        if (currentExercise === "Squats") {
-          const hip = landmarks[24]; // Right hip
-          const knee = landmarks[26]; // Right knee
-          const ankle = landmarks[28]; // Right ankle
-
-          if (
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5 &&
-            ankle.visibility > 0.5
-          ) {
-            const angle = calculateAngle(hip, knee, ankle);
-            let currentFeedback = "Keep going";
-
-            if (angle > 160) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              }
-            }
-            if (angle < 90) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Drive up!";
-            } else if (angle < 120 && repStateRef.current.stage === "up") {
-              currentFeedback = "Lower...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure full body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Pushups") {
-          const shoulder = landmarks[12]; // Right shoulder
-          const elbow = landmarks[14]; // Right elbow
-          const wrist = landmarks[16]; // Right wrist
-
-          if (
-            shoulder.visibility > 0.5 &&
-            elbow.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, elbow, wrist);
-            let currentFeedback = "Keep going";
-
-            if (angle > 160) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              }
-            }
-            if (angle < 90) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Push up!";
-            } else if (angle < 120 && repStateRef.current.stage === "up") {
-              currentFeedback = "Go deeper...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure upper body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Bicep Curls") {
-          const shoulder = landmarks[12]; // Right shoulder
-          const elbow = landmarks[14]; // Right elbow
-          const wrist = landmarks[16]; // Right wrist
-
-          if (
-            shoulder.visibility > 0.5 &&
-            elbow.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, elbow, wrist);
-            let currentFeedback = "Keep going";
-
-            if (angle > 150) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              } else {
-                currentFeedback = "Curl up...";
-              }
-            }
-            if (angle < 50) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Squeeze! Now lower slowly.";
-            } else if (angle < 90 && repStateRef.current.stage === "up") {
-              currentFeedback = "Curl higher...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure arm is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Shoulder Press") {
-          const hip = landmarks[24]; // Right hip
-          const shoulder = landmarks[12]; // Right shoulder
-          const elbow = landmarks[14]; // Right elbow
-          const wrist = landmarks[16]; // Right wrist
-
-          if (
-            shoulder.visibility > 0.5 &&
-            elbow.visibility > 0.5 &&
-            wrist.visibility > 0.5 &&
-            hip.visibility > 0.5
-          ) {
-            const elbowAngle = calculateAngle(shoulder, elbow, wrist);
-            let currentFeedback = "Keep going";
-
-            if (elbowAngle > 160) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Locked out! Good rep.";
-              }
-            }
-            if (elbowAngle < 90) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Press up!";
-            } else if (elbowAngle < 120 && repStateRef.current.stage === "up") {
-              currentFeedback = "Lower to shoulders...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure upper body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Lunges") {
-          const hip = landmarks[24]; // Right hip
-          const knee = landmarks[26]; // Right knee
-          const ankle = landmarks[28]; // Right ankle
-
-          if (
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5 &&
-            ankle.visibility > 0.5
-          ) {
-            const angle = calculateAngle(hip, knee, ankle);
-            let currentFeedback = "Keep going";
-
-            if (angle > 160) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              }
-            }
-            if (angle < 100) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Drive back up!";
-            } else if (angle < 130 && repStateRef.current.stage === "up") {
-              currentFeedback = "Lunge deeper...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure full body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Jumping Jacks") {
-          const shoulder = landmarks[12]; // Right shoulder
-          const hip = landmarks[24]; // Right hip
-          const wrist = landmarks[16]; // Right wrist
-
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const armAngle = calculateAngle(hip, shoulder, wrist);
-            let currentFeedback = "Keep going";
-
-            if (armAngle > 150) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              }
-            }
-            if (armAngle < 40) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Jump!";
-            } else if (armAngle < 80 && repStateRef.current.stage === "up") {
-              currentFeedback = "Arms up...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure full body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Deadlifts") {
-          const shoulder = landmarks[12]; // Right shoulder
-          const hip = landmarks[24]; // Right hip
-          const knee = landmarks[26]; // Right knee
-
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5
-          ) {
-            const hipAngle = calculateAngle(shoulder, hip, knee);
-            let currentFeedback = "Keep going";
-
-            if (hipAngle > 160) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Lockout! Good rep.";
-              }
-            }
-            if (hipAngle < 100) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Drive hips forward!";
-            } else if (hipAngle < 130 && repStateRef.current.stage === "up") {
-              currentFeedback = "Hinge at hips...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure full body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Lateral Raises") {
-          const hip = landmarks[24]; // Right hip
-          const shoulder = landmarks[12]; // Right shoulder
-          const wrist = landmarks[16]; // Right wrist
-
-          if (
-            hip.visibility > 0.5 &&
-            shoulder.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const armAngle = calculateAngle(hip, shoulder, wrist);
-            let currentFeedback = "Keep going";
-
-            if (armAngle < 25) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              } else {
-                currentFeedback = "Raise arms to sides...";
-              }
-            }
-            if (armAngle > 70) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Lower slowly!";
-            } else if (armAngle > 40 && repStateRef.current.stage === "up") {
-              currentFeedback = "Raise higher...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure upper body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "High Knees") {
-          const leftShoulder = landmarks[11];
-          const leftHip = landmarks[23];
-          const leftKnee = landmarks[25];
-          const rightShoulder = landmarks[12];
-          const rightHip = landmarks[24];
-          const rightKnee = landmarks[26];
-
-          if (
-            leftHip.visibility > 0.5 &&
-            leftKnee.visibility > 0.5 &&
-            rightHip.visibility > 0.5 &&
-            rightKnee.visibility > 0.5
-          ) {
-            const leftAngle = calculateAngle(leftShoulder, leftHip, leftKnee);
-            const rightAngle = calculateAngle(
-              rightShoulder,
-              rightHip,
-              rightKnee,
-            );
-            const minAngle = Math.min(leftAngle, rightAngle);
-            let currentFeedback = "Keep going";
-
-            if (minAngle > 155) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              } else {
-                currentFeedback = "Drive knees up!";
-              }
-            }
-            if (minAngle < 110) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Keep going!";
-            } else if (minAngle < 140 && repStateRef.current.stage === "up") {
-              currentFeedback = "Knees higher!";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure full body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Tricep Dips") {
-          const shoulder = landmarks[12]; // Right shoulder
-          const elbow = landmarks[14]; // Right elbow
-          const wrist = landmarks[16]; // Right wrist
-
-          if (
-            shoulder.visibility > 0.5 &&
-            elbow.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, elbow, wrist);
-            let currentFeedback = "Keep going";
-
-            if (angle > 150) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              }
-            }
-            if (angle < 90) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Push up!";
-            } else if (angle < 120 && repStateRef.current.stage === "up") {
-              currentFeedback = "Dip lower...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure upper body is visible",
-            }));
-          }
-        }
-
-        if (currentExercise === "Glute Bridges") {
-          const shoulder = landmarks[12]; // Right shoulder
-          const hip = landmarks[24]; // Right hip
-          const knee = landmarks[26]; // Right knee
-
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5
-          ) {
-            const hipAngle = calculateAngle(shoulder, hip, knee);
-            let currentFeedback = "Keep going";
-
-            if (hipAngle < 140) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              } else {
-                currentFeedback = "Push hips up...";
-              }
-            }
-            if (hipAngle > 160) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Hold! Now lower.";
-            } else if (hipAngle > 145 && repStateRef.current.stage === "up") {
-              currentFeedback = "Push hips higher...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure body is visible from the side",
-            }));
-          }
-        }
-
-        if (currentExercise === "Crunches") {
-          const shoulder = landmarks[12]; // Right shoulder
-          const hip = landmarks[24]; // Right hip
-          const knee = landmarks[26]; // Right knee
-
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5
-          ) {
-            const torsoAngle = calculateAngle(shoulder, hip, knee);
-            let currentFeedback = "Keep going";
-
-            if (torsoAngle > 150) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                currentFeedback = "Good rep!";
-              } else {
-                currentFeedback = "Crunch up...";
-              }
-            }
-            if (torsoAngle < 120) {
-              repStateRef.current.stage = "down";
-              currentFeedback = "Squeeze! Now lower.";
-            } else if (torsoAngle < 140 && repStateRef.current.stage === "up") {
-              currentFeedback = "Crunch higher...";
-            }
-
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: currentFeedback,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure body is visible from the side",
-            }));
-          }
-        }
-
-        // --- Helper-based tracking for remaining exercises ---
-
-        // Elbow angle tracker: shoulder(12)-elbow(14)-wrist(16)
+        // Helper: Elbow angle tracker (Side-agnostic)
         const trackElbowAngle = (
-          upThresh: number,
-          downThresh: number,
-          midThresh: number,
+          config: RepConfig,
           upMsg: string,
           downMsg: string,
           midMsg: string,
           visMsg: string,
         ) => {
-          const shoulder = landmarks[12];
-          const elbow = landmarks[14];
-          const wrist = landmarks[16];
-          if (
-            shoulder.visibility > 0.5 &&
-            elbow.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, elbow, wrist);
-            let fb = "Keep going";
-            if (angle > upThresh) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = upMsg;
-              }
-            }
-            if (angle < downThresh) {
-              repStateRef.current.stage = "down";
-              fb = downMsg;
-            } else if (
-              angle < midThresh &&
-              repStateRef.current.stage === "up"
-            ) {
-              fb = midMsg;
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
+          const lS = landmarks[11]; const lE = landmarks[13]; const lW = landmarks[15];
+          const rS = landmarks[12]; const rE = landmarks[14]; const rW = landmarks[16];
+          const lVis = (lS.visibility + lE.visibility + lW.visibility) / 3;
+          const rVis = (rS.visibility + rE.visibility + rW.visibility) / 3;
+
+          if (lVis > 0.5 || rVis > 0.5) {
+            const side = lVis > rVis ? { s: lS, e: lE, w: lW } : { s: rS, e: rE, w: rW };
+            const angle = calculateAngle(side.s, side.e, side.w);
+            const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
+            let fb = phase === "down" ? downMsg : midMsg;
+            if (repCompleted) fb = upMsg === "Keep going" ? "Good rep!" : upMsg;
+            setState((prev) => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: angle }));
           } else {
             setState((prev) => ({ ...prev, feedback: visMsg }));
           }
         };
 
-        // Knee angle tracker: hip(24)-knee(26)-ankle(28)
+        // Helper: Knee angle tracker (Side-agnostic)
         const trackKneeAngle = (
-          upThresh: number,
-          downThresh: number,
-          midThresh: number,
+          config: RepConfig,
           upMsg: string,
           downMsg: string,
           midMsg: string,
           visMsg: string,
         ) => {
-          const hip = landmarks[24];
-          const knee = landmarks[26];
-          const ankle = landmarks[28];
-          if (
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5 &&
-            ankle.visibility > 0.5
-          ) {
-            const angle = calculateAngle(hip, knee, ankle);
-            let fb = "Keep going";
-            if (angle > upThresh) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = upMsg;
-              }
-            }
-            if (angle < downThresh) {
-              repStateRef.current.stage = "down";
-              fb = downMsg;
-            } else if (
-              angle < midThresh &&
-              repStateRef.current.stage === "up"
-            ) {
-              fb = midMsg;
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
+          const lH = landmarks[23]; const lK = landmarks[25]; const lA = landmarks[27];
+          const rH = landmarks[24]; const rK = landmarks[26]; const rA = landmarks[28];
+          const lVis = (lH.visibility + lK.visibility + lA.visibility) / 3;
+          const rVis = (rH.visibility + rK.visibility + rA.visibility) / 3;
+
+          if (lVis > 0.5 || rVis > 0.5) {
+            const side = lVis > rVis ? { h: lH, k: lK, a: lA } : { h: rH, k: rK, a: rA };
+            const angle = calculateAngle(side.h, side.k, side.a);
+            const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
+            let fb = phase === "down" ? downMsg : midMsg;
+            if (repCompleted) fb = upMsg === "Keep going" ? "Good rep!" : upMsg;
+            setState((prev) => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: angle }));
           } else {
             setState((prev) => ({ ...prev, feedback: visMsg }));
           }
         };
 
-        // Hip angle tracker: shoulder(12)-hip(24)-knee(26)
+        // Helper: Hip angle tracker (Side-agnostic)
         const trackHipAngle = (
-          upThresh: number,
-          downThresh: number,
-          midThresh: number,
+          config: RepConfig,
           upMsg: string,
           downMsg: string,
           midMsg: string,
           visMsg: string,
         ) => {
-          const shoulder = landmarks[12];
-          const hip = landmarks[24];
-          const knee = landmarks[26];
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, hip, knee);
-            let fb = "Keep going";
-            if (angle > upThresh) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = upMsg;
-              }
-            }
-            if (angle < downThresh) {
-              repStateRef.current.stage = "down";
-              fb = downMsg;
-            } else if (
-              angle < midThresh &&
-              repStateRef.current.stage === "up"
-            ) {
-              fb = midMsg;
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
+          const lS = landmarks[11]; const lH = landmarks[23]; const lK = landmarks[25];
+          const rS = landmarks[12]; const rH = landmarks[24]; const rK = landmarks[26];
+          const lVis = (lS.visibility + lH.visibility + lK.visibility) / 3;
+          const rVis = (rS.visibility + rH.visibility + rK.visibility) / 3;
+
+          if (lVis > 0.5 || rVis > 0.5) {
+            const side = lVis > rVis ? { s: lS, h: lH, k: lK } : { s: rS, h: rH, k: rK };
+            const angle = calculateAngle(side.s, side.h, side.k);
+            const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
+            let fb = phase === "down" ? downMsg : midMsg;
+            if (repCompleted) fb = upMsg === "Keep going" ? "Good rep!" : upMsg;
+            setState((prev) => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: angle }));
           } else {
             setState((prev) => ({ ...prev, feedback: visMsg }));
           }
         };
 
-        // Arm abduction tracker: hip(24)-shoulder(12)-wrist(16)
+        // Helper: Arm abduction tracker (Side-agnostic)
         const trackArmAbduction = (
-          upThresh: number,
-          downThresh: number,
-          midThresh: number,
+          config: RepConfig,
           upMsg: string,
           downMsg: string,
           midMsg: string,
           visMsg: string,
         ) => {
-          const hip = landmarks[24];
-          const shoulder = landmarks[12];
-          const wrist = landmarks[16];
-          if (
-            hip.visibility > 0.5 &&
-            shoulder.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const angle = calculateAngle(hip, shoulder, wrist);
-            let fb = "Keep going";
-            if (angle > upThresh) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = upMsg;
-              }
-            }
-            if (angle < downThresh) {
-              repStateRef.current.stage = "down";
-              fb = downMsg;
-            } else if (
-              angle < midThresh &&
-              repStateRef.current.stage === "up"
-            ) {
-              fb = midMsg;
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
+          const lH = landmarks[23]; const lS = landmarks[11]; const lW = landmarks[15];
+          const rH = landmarks[24]; const rS = landmarks[12]; const rW = landmarks[16];
+          const lVis = (lH.visibility + lS.visibility + lW.visibility) / 3;
+          const rVis = (rH.visibility + rS.visibility + rW.visibility) / 3;
+
+          if (lVis > 0.5 || rVis > 0.5) {
+            const side = lVis > rVis ? { h: lH, s: lS, w: lW } : { h: rH, s: rS, w: rW };
+            const angle = calculateAngle(side.h, side.s, side.w);
+            const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
+            let fb = phase === "down" ? downMsg : midMsg;
+            if (repCompleted) fb = upMsg === "Keep going" ? "Good rep!" : upMsg;
+            setState((prev) => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: angle }));
           } else {
             setState((prev) => ({ ...prev, feedback: visMsg }));
           }
         };
 
-        // Alternating legs tracker (both hips/knees)
+        // Helper: Alternating legs tracker
         const trackAlternatingLegs = (
-          upThresh: number,
-          downThresh: number,
-          midThresh: number,
+          config: RepConfig,
           upMsg: string,
           downMsg: string,
           midMsg: string,
@@ -821,838 +216,124 @@ export const usePoseTracker = (
           const rS = landmarks[12];
           const rH = landmarks[24];
           const rK = landmarks[26];
-          if (
-            lH.visibility > 0.5 &&
-            lK.visibility > 0.5 &&
-            rH.visibility > 0.5 &&
-            rK.visibility > 0.5
-          ) {
+          if (lH.visibility > 0.5 && lK.visibility > 0.5 && rH.visibility > 0.5 && rK.visibility > 0.5) {
             const lA = calculateAngle(lS, lH, lK);
             const rA = calculateAngle(rS, rH, rK);
             const minAngle = Math.min(lA, rA);
-            let fb = "Keep going";
-            if (minAngle > upThresh) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = upMsg;
-              }
-            }
-            if (minAngle < downThresh) {
-              repStateRef.current.stage = "down";
-              fb = downMsg;
-            } else if (
-              minAngle < midThresh &&
-              repStateRef.current.stage === "up"
-            ) {
-              fb = midMsg;
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
+            const { phase, repCount, repCompleted } = repCounterRef.current.update(minAngle, config);
+            let fb = phase === "down" ? downMsg : midMsg;
+            if (repCompleted) fb = upMsg;
+            setState((prev) => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: minAngle }));
           } else {
             setState((prev) => ({ ...prev, feedback: visMsg }));
           }
         };
 
-        // --- Pushup variants (elbow angle) ---
-        if (currentExercise === "Wide Pushups") {
-          trackElbowAngle(
-            160,
-            90,
-            120,
-            "Keep going",
-            "Push up!",
-            "Go deeper...",
-            "Ensure upper body is visible",
-          );
-        }
-        if (currentExercise === "Diamond Pushups") {
-          trackElbowAngle(
-            155,
-            80,
-            110,
-            "Keep going",
-            "Push up!",
-            "Go deeper...",
-            "Ensure upper body is visible",
-          );
-        }
-        if (currentExercise === "Pike Pushups") {
-          trackElbowAngle(
-            155,
-            85,
-            115,
-            "Keep going",
-            "Press up!",
-            "Lower head...",
-            "Ensure upper body is visible",
-          );
-        }
-        if (currentExercise === "Wall Pushups") {
-          trackElbowAngle(
-            160,
-            100,
-            130,
-            "Keep going",
-            "Push away!",
-            "Lean in more...",
-            "Ensure upper body is visible",
-          );
-        }
-
-        // --- Tricep variants (elbow angle) ---
-        if (currentExercise === "Overhead Tricep Extension") {
-          trackElbowAngle(
-            155,
-            60,
-            100,
-            "Extend fully...",
-            "Squeeze! Now extend.",
-            "Extend more...",
-            "Ensure arm is visible",
-          );
-        }
-        if (currentExercise === "Tricep Kickbacks") {
-          trackElbowAngle(
-            150,
-            70,
-            110,
-            "Extend arm...",
-            "Good squeeze! Extend back.",
-            "Kick back more...",
-            "Ensure arm is visible",
-          );
-        }
-
-        // --- Curl variants (elbow angle, inverted: down=extended, up=curled) ---
-        if (currentExercise === "Hammer Curls") {
-          const shoulder = landmarks[12];
-          const elbow = landmarks[14];
-          const wrist = landmarks[16];
-          if (
-            shoulder.visibility > 0.5 &&
-            elbow.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, elbow, wrist);
-            let fb = "Keep going";
-            if (angle > 150) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Curl up...";
-              }
-            }
-            if (angle < 50) {
-              repStateRef.current.stage = "down";
-              fb = "Squeeze! Now lower slowly.";
-            } else if (angle < 90 && repStateRef.current.stage === "up") {
-              fb = "Curl higher...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure arm is visible",
-            }));
+        if (!repConfig) {
+          setState((prev) => ({ ...prev, feedback: "Exercise configuration missing" }));
+        } else {
+          // Group 1: Knee Angle Exercises
+          if (["Squats", "Lunges", "Sumo Squats", "Bulgarian Split Squats", "Side Lunges", "Step Ups", "Wall Sit", "Burpees", "Squat Jumps", "Box Jumps", "Butt Kicks"].includes(currentExercise)) {
+            trackKneeAngle(repConfig, "Good rep!", "Go deeper!", "Lower...", "Ensure legs are visible");
           }
-        }
-
-        // --- Shoulder / raise variants (arm abduction) ---
-        if (currentExercise === "Front Raises") {
-          trackArmAbduction(
-            140,
-            30,
-            70,
-            "Lower slowly...",
-            "Raise arms forward!",
-            "Raise higher...",
-            "Ensure upper body is visible",
-          );
-        }
-        if (currentExercise === "Arnold Press") {
-          trackElbowAngle(
-            160,
-            85,
-            115,
-            "Press overhead...",
-            "Press up!",
-            "Lower to shoulders...",
-            "Ensure upper body is visible",
-          );
-        }
-        if (currentExercise === "Upright Rows") {
-          const shoulder = landmarks[12];
-          const elbow = landmarks[14];
-          const hip = landmarks[24];
-          if (
-            shoulder.visibility > 0.5 &&
-            elbow.visibility > 0.5 &&
-            hip.visibility > 0.5
-          ) {
-            const angle = calculateAngle(hip, shoulder, elbow);
-            let fb = "Keep going";
-            if (angle < 30) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Pull elbows up...";
-              }
-            }
-            if (angle > 80) {
-              repStateRef.current.stage = "down";
-              fb = "Lower slowly!";
-            } else if (angle > 50 && repStateRef.current.stage === "up") {
-              fb = "Pull higher...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure upper body is visible",
-            }));
+          // Group 2: Elbow Angle Exercises
+          else if (["Pushups", "Bicep Curls", "Shoulder Press", "Wide Pushups", "Diamond Pushups", "Pike Pushups", "Wall Pushups", "Overhead Tricep Extension", "Tricep Kickbacks", "Hammer Curls", "Arnold Press", "Bent Over Rows", "Tricep Dips", "Upright Rows"].includes(currentExercise)) {
+            trackElbowAngle(repConfig, "Good rep!", "Keep it going...", "Follow the rhythm", "Ensure arms are visible");
           }
-        }
-        if (currentExercise === "Bent Over Rows") {
-          trackElbowAngle(
-            155,
-            60,
-            100,
-            "Extend arm...",
-            "Pull! Squeeze back.",
-            "Pull higher...",
-            "Ensure upper body is visible",
-          );
-        }
-        if (currentExercise === "Reverse Flys") {
-          trackArmAbduction(
-            130,
-            20,
-            60,
-            "Bring arms in...",
-            "Squeeze shoulder blades!",
-            "Open wider...",
-            "Ensure upper body is visible",
-          );
-        }
-        if (currentExercise === "Chest Flys") {
-          // Track how close wrists get (arm adduction) via abduction angle
-          const hip = landmarks[24];
-          const shoulder = landmarks[12];
-          const wrist = landmarks[16];
-          if (
-            hip.visibility > 0.5 &&
-            shoulder.visibility > 0.5 &&
-            wrist.visibility > 0.5
-          ) {
-            const angle = calculateAngle(hip, shoulder, wrist);
-            let fb = "Keep going";
-            if (angle > 70) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Open arms wider...";
-              }
-            }
-            if (angle < 25) {
-              repStateRef.current.stage = "down";
-              fb = "Squeeze! Now open.";
-            } else if (angle < 45 && repStateRef.current.stage === "up") {
-              fb = "Bring arms together...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure upper body is visible",
-            }));
+          // Group 3: Hip Angle Exercises (Shoulder-Hip-Knee)
+          else if (["Deadlifts", "Glute Bridges", "Crunches", "Donkey Kicks", "Good Mornings", "Sit Ups", "V-Ups", "Toe Touches", "Superman", "Hip Thrusts", "Side Plank Dips", "Leg Raises"].includes(currentExercise)) {
+            trackHipAngle(repConfig, "Good rep!", "Keep it going...", "Follow the rhythm", "Ensure body is visible from the side");
           }
-        }
-
-        // --- Lower body variants (knee angle) ---
-        if (currentExercise === "Sumo Squats") {
-          trackKneeAngle(
-            160,
-            85,
-            115,
-            "Stand tall",
-            "Drive up!",
-            "Lower more...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Bulgarian Split Squats") {
-          trackKneeAngle(
-            160,
-            90,
-            120,
-            "Stand tall",
-            "Drive up!",
-            "Lower deeper...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Side Lunges") {
-          trackKneeAngle(
-            160,
-            95,
-            125,
-            "Stand tall",
-            "Push back up!",
-            "Lunge deeper...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Step Ups") {
-          trackKneeAngle(
-            160,
-            100,
-            130,
-            "Step up fully",
-            "Step up!",
-            "Drive knee higher...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Calf Raises") {
-          // Track ankle angle via knee-ankle-foot
-          const knee = landmarks[26];
-          const ankle = landmarks[28];
-          const foot = landmarks[32]; // Right foot index
-          if (
-            knee.visibility > 0.5 &&
-            ankle.visibility > 0.5 &&
-            foot.visibility > 0.5
-          ) {
-            const angle = calculateAngle(knee, ankle, foot);
-            let fb = "Keep going";
-            if (angle > 160) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Rise up on toes...";
-              }
-            }
-            if (angle < 130) {
-              repStateRef.current.stage = "down";
-              fb = "Hold! Now lower.";
-            } else if (angle < 145 && repStateRef.current.stage === "up") {
-              fb = "Push higher on toes...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure legs and feet are visible",
-            }));
+          // Group 4: Arm Abduction Exercises
+          else if (["Lateral Raises", "Jumping Jacks", "Front Raises", "Reverse Flys", "Chest Flys"].includes(currentExercise)) {
+            trackArmAbduction(repConfig, "Good rep!", "Bring it together!", "Open up!", "Ensure upper body is visible");
           }
-        }
-
-        // --- Glute / hip variants ---
-        if (currentExercise === "Donkey Kicks") {
-          trackHipAngle(
-            165,
-            110,
-            135,
-            "Kick back...",
-            "Squeeze glute! Now lower.",
-            "Kick higher...",
-            "Ensure body is visible from the side",
-          );
-        }
-        if (currentExercise === "Fire Hydrants") {
-          // Track lateral knee elevation via hip abduction
-          const lHip = landmarks[23];
-          const rHip = landmarks[24];
-          const rKnee = landmarks[26];
-          if (
-            lHip.visibility > 0.5 &&
-            rHip.visibility > 0.5 &&
-            rKnee.visibility > 0.5
-          ) {
-            const angle = calculateAngle(lHip, rHip, rKnee);
-            let fb = "Keep going";
-            if (angle < 120) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Lift knee out...";
-              }
-            }
-            if (angle > 165) {
-              repStateRef.current.stage = "down";
-              fb = "Open! Now lower.";
-            } else if (angle > 140 && repStateRef.current.stage === "up") {
-              fb = "Lift knee higher...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure hips and knees are visible",
-            }));
+          // Group 5: Alternating Leg Exercises
+          else if (["Mountain Climbers", "Bicycle Crunches", "Dead Bugs", "High Knees"].includes(currentExercise)) {
+            trackAlternatingLegs(repConfig, "Good rep!", "Keep moving!", "Higher!", "Ensure full body is visible");
           }
-        }
-        if (currentExercise === "Hip Thrusts") {
-          // Same as glute bridges with slightly different thresholds
-          const shoulder = landmarks[12];
-          const hip = landmarks[24];
-          const knee = landmarks[26];
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5
-          ) {
-            const hipAngle = calculateAngle(shoulder, hip, knee);
-            let fb = "Keep going";
-            if (hipAngle < 140) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Thrust hips up...";
-              }
-            }
-            if (hipAngle > 155) {
-              repStateRef.current.stage = "down";
-              fb = "Squeeze! Now lower.";
-            } else if (hipAngle > 145 && repStateRef.current.stage === "up") {
-              fb = "Push hips higher...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure body is visible from the side",
-            }));
-          }
-        }
-        if (currentExercise === "Good Mornings") {
-          trackHipAngle(
-            160,
-            90,
-            125,
-            "Stand tall",
-            "Hinge forward! Now stand.",
-            "Hinge deeper...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Wall Sit") {
-          // Isometric: track reps as transitions in/out of hold position
-          trackKneeAngle(
-            160,
-            85,
-            110,
-            "Stand up...",
-            "Hold position!",
-            "Sit deeper...",
-            "Ensure full body is visible",
-          );
-        }
-
-        // --- Core variants ---
-        if (currentExercise === "Sit Ups") {
-          trackHipAngle(
-            155,
-            90,
-            120,
-            "Lie back down...",
-            "Sit all the way up!",
-            "Curl up more...",
-            "Ensure body is visible from the side",
-          );
-        }
-        if (currentExercise === "Leg Raises") {
-          // Track hip angle (shoulder-hip-ankle for leg elevation)
-          const shoulder = landmarks[12];
-          const hip = landmarks[24];
-          const ankle = landmarks[28];
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            ankle.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, hip, ankle);
-            let fb = "Keep going";
-            if (angle > 155) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Raise legs...";
-              }
-            }
-            if (angle < 100) {
-              repStateRef.current.stage = "down";
-              fb = "Hold! Now lower slowly.";
-            } else if (angle < 130 && repStateRef.current.stage === "up") {
-              fb = "Raise legs higher...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure body is visible from the side",
-            }));
-          }
-        }
-        if (currentExercise === "Mountain Climbers") {
-          trackAlternatingLegs(
-            155,
-            100,
-            130,
-            "Drive knees!",
-            "Keep going!",
-            "Knees higher!",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Bicycle Crunches") {
-          trackAlternatingLegs(
-            150,
-            90,
-            120,
-            "Twist and crunch!",
-            "Keep pedaling!",
-            "Bring knee closer!",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Flutter Kicks") {
-          // Track alternating ankle elevation
-          const lH = landmarks[23];
-          const lA = landmarks[27];
-          const rH = landmarks[24];
-          const rA = landmarks[28];
-          if (
-            lH.visibility > 0.5 &&
-            lA.visibility > 0.5 &&
-            rH.visibility > 0.5 &&
-            rA.visibility > 0.5
-          ) {
-            const diff = Math.abs(lA.y - rA.y);
-            let fb = "Keep going";
-            if (diff > 0.08) {
-              if (repStateRef.current.stage === "up") {
-                repStateRef.current.stage = "down";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              }
-            }
-            if (diff < 0.03) {
-              repStateRef.current.stage = "up";
-              fb = "Flutter faster!";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure legs are visible",
-            }));
-          }
-        }
-        if (currentExercise === "V-Ups") {
-          trackHipAngle(
-            155,
-            70,
-            110,
-            "Lie back...",
-            "Reach for toes! V-shape!",
-            "Fold more...",
-            "Ensure body is visible from the side",
-          );
-        }
-        if (currentExercise === "Dead Bugs") {
-          trackAlternatingLegs(
-            155,
-            105,
-            135,
-            "Extend limbs...",
-            "Keep going!",
-            "Extend more!",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Side Plank Dips") {
-          // Track lateral hip dip via hip-shoulder vertical alignment
-          const shoulder = landmarks[12];
-          const hip = landmarks[24];
-          const ankle = landmarks[28];
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            ankle.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, hip, ankle);
-            let fb = "Keep going";
-            if (angle > 170) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Dip hips down...";
-              }
-            }
-            if (angle < 140) {
-              repStateRef.current.stage = "down";
-              fb = "Lift hips up!";
-            } else if (angle < 160 && repStateRef.current.stage === "up") {
-              fb = "Dip lower...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure body is visible from the side",
-            }));
-          }
-        }
-        if (currentExercise === "Russian Twists") {
-          // Track shoulder rotation via left wrist - right wrist horizontal distance
-          const lW = landmarks[15]; // Left wrist
-          const rW = landmarks[16]; // Right wrist
-          const lS = landmarks[11];
-          const rS = landmarks[12];
-          if (
-            lW.visibility > 0.5 &&
-            rW.visibility > 0.5 &&
-            lS.visibility > 0.5 &&
-            rS.visibility > 0.5
-          ) {
-            const midShoulderX = (lS.x + rS.x) / 2;
-            const handMidX = (lW.x + rW.x) / 2;
-            const offset = handMidX - midShoulderX;
-            let fb = "Keep twisting";
-            if (offset > 0.08) {
-              if (repStateRef.current.stage === "up") {
-                repStateRef.current.stage = "down";
-                repStateRef.current.count += 1;
-                fb = "Good twist!";
-              }
-            }
-            if (offset < -0.08) {
-              repStateRef.current.stage = "up";
-              fb = "Twist other side!";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure upper body is visible",
-            }));
-          }
-        }
-
-        // --- Full body / cardio ---
-        if (currentExercise === "Burpees") {
-          // Track full squat-to-stand using hip-knee-ankle
-          trackKneeAngle(
-            160,
-            80,
-            115,
-            "Stand tall",
-            "Explode up!",
-            "Get lower...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Squat Jumps") {
-          trackKneeAngle(
-            165,
-            85,
-            120,
-            "Jump!",
-            "Explode up!",
-            "Squat deeper...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Box Jumps") {
-          trackKneeAngle(
-            165,
-            90,
-            120,
-            "Land soft!",
-            "Jump up!",
-            "Load more...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Butt Kicks") {
-          // Track heel-to-glute distance via knee flexion (hip-knee-ankle)
-          const hip = landmarks[24];
-          const knee = landmarks[26];
-          const ankle = landmarks[28];
-          if (
-            hip.visibility > 0.5 &&
-            knee.visibility > 0.5 &&
-            ankle.visibility > 0.5
-          ) {
-            const angle = calculateAngle(hip, knee, ankle);
-            let fb = "Keep going";
-            if (angle > 140) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Kick heels up!";
-              }
-            }
-            if (angle < 50) {
-              repStateRef.current.stage = "down";
-              fb = "Great kick! Keep going.";
-            } else if (angle < 90 && repStateRef.current.stage === "up") {
-              fb = "Kick higher...";
-            }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure full body is visible",
-            }));
-          }
-        }
-        if (currentExercise === "Arm Circles") {
-          // Track shoulder rotation via wrist position relative to shoulder
-          const shoulder = landmarks[12];
-          const wrist = landmarks[16];
-          if (shoulder.visibility > 0.5 && wrist.visibility > 0.5) {
-            const above = wrist.y < shoulder.y;
-            let fb = "Keep circling";
-            if (above) {
-              if (repStateRef.current.stage === "up") {
-                repStateRef.current.stage = "down";
-                repStateRef.current.count += 1;
-                fb = "Good circle!";
-              }
+          // Group 6: Custom Tracker Exercises
+          else if (currentExercise === "Russian Twists") {
+            const lW = landmarks[15]; const rW = landmarks[16];
+            const lS = landmarks[11]; const rS = landmarks[12];
+            if (lW.visibility > 0.5 && rW.visibility > 0.5 && lS.visibility > 0.5 && rS.visibility > 0.5) {
+              const midS = (lS.x + rS.x) / 2; const handX = (lW.x + rW.x) / 2;
+              const offset = (handX - midS) * 100;
+              const { phase, repCount, repCompleted } = repCounterRef.current.update(offset, {
+                up: { min: 8, max: 100 }, down: { min: -100, max: -8 },
+              });
+              let fb = phase === "up" ? "Twist left!" : "Twist right!";
+              if (repCompleted) fb = "Good twist!";
+              setState(prev => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: Math.abs(offset) * 1.8 }));
             } else {
-              repStateRef.current.stage = "up";
-              fb = "Circle around...";
+              setState(prev => ({ ...prev, feedback: "Ensure upper body is visible" }));
             }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure arm is visible",
-            }));
           }
-        }
-        if (currentExercise === "Toe Touches") {
-          trackHipAngle(
-            155,
-            80,
-            115,
-            "Stand back up...",
-            "Touch those toes!",
-            "Reach lower...",
-            "Ensure full body is visible",
-          );
-        }
-        if (currentExercise === "Superman") {
-          // Track back extension: shoulder elevation relative to hip
-          const shoulder = landmarks[12];
-          const hip = landmarks[24];
-          const ankle = landmarks[28];
-          if (
-            shoulder.visibility > 0.5 &&
-            hip.visibility > 0.5 &&
-            ankle.visibility > 0.5
-          ) {
-            const angle = calculateAngle(shoulder, hip, ankle);
-            let fb = "Keep going";
-            if (angle > 165) {
-              if (repStateRef.current.stage === "down") {
-                repStateRef.current.stage = "up";
-                repStateRef.current.count += 1;
-                fb = "Good rep!";
-              } else {
-                fb = "Lift arms and legs...";
-              }
+          else if (currentExercise === "Calf Raises") {
+            const lK = landmarks[25]; const lA = landmarks[27]; const lF = landmarks[31];
+            const rK = landmarks[26]; const rA = landmarks[28]; const rF = landmarks[32];
+            const lVis = (lK.visibility + lA.visibility + lF.visibility) / 3;
+            const rVis = (rK.visibility + rA.visibility + rF.visibility) / 3;
+
+            if (lVis > 0.5 || rVis > 0.5) {
+              const side = lVis > rVis ? { k: lK, a: lA, f: lF } : { k: rK, a: rA, f: rF };
+              const angle = calculateAngle(side.k, side.a, side.f);
+              const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, {
+                up: { min: 160, max: 180 }, down: { min: 0, max: 130 },
+              });
+              let fb = phase === "up" ? "Hold! Now lower." : "Push higher on toes...";
+              if (repCompleted) fb = "Good rep!";
+              setState(prev => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: angle }));
+            } else {
+              setState(prev => ({ ...prev, feedback: "Ensure legs and feet are visible" }));
             }
-            if (angle < 140) {
-              repStateRef.current.stage = "down";
-              fb = "Hold! Now lower.";
-            } else if (angle < 155 && repStateRef.current.stage === "up") {
-              fb = "Lift higher...";
+          }
+          else if (currentExercise === "Fire Hydrants") {
+            const lH = landmarks[23]; const rH = landmarks[24]; const rK = landmarks[26];
+            if (lH.visibility > 0.5 && rH.visibility > 0.5 && rK.visibility > 0.5) {
+              const angle = calculateAngle(lH, rH, rK);
+              const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, {
+                up: { min: 0, max: 120 }, down: { min: 165, max: 180 },
+              });
+              let fb = phase === "up" ? "Open! Now lower." : "Lift knee higher...";
+              if (repCompleted) fb = "Good rep!";
+              setState(prev => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: angle }));
+            } else {
+              setState(prev => ({ ...prev, feedback: "Ensure hips and knees are visible" }));
             }
-            setState((prev) => ({
-              ...prev,
-              reps: repStateRef.current.count,
-              feedback: fb,
-            }));
-          } else {
-            setState((prev) => ({
-              ...prev,
-              feedback: "Ensure body is visible from the side",
-            }));
+          }
+          else if (currentExercise === "Flutter Kicks") {
+            const lA = landmarks[27]; const rA = landmarks[28];
+            if (lA.visibility > 0.5 && rA.visibility > 0.5) {
+              const diff = Math.abs(lA.y - rA.y) * 1000;
+              const { phase, repCount, repCompleted } = repCounterRef.current.update(diff, {
+                up: { min: 80, max: 1000 }, down: { min: 0, max: 30 },
+              });
+              let fb = phase === "up" ? "Good rep!" : "Flutter faster!";
+              if (repCompleted) fb = "Keep going!";
+              setState(prev => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: diff / 10 }));
+            } else {
+              setState(prev => ({ ...prev, feedback: "Ensure legs are visible" }));
+            }
+          }
+          else if (currentExercise === "Arm Circles") {
+            const lS = landmarks[11]; const lW = landmarks[15];
+            const rS = landmarks[12]; const rW = landmarks[16];
+            const lVis = (lS.visibility + lW.visibility) / 2;
+            const rVis = (rS.visibility + rW.visibility) / 2;
+
+            if (lVis > 0.5 || rVis > 0.5) {
+              const side = lVis > rVis ? { s: lS, w: lW } : { s: rS, w: rW };
+              const metric = side.w.y < side.s.y ? 1 : 0;
+              const { phase, repCount, repCompleted } = repCounterRef.current.update(metric, {
+                up: { min: 1, max: 1 }, down: { min: 0, max: 0 },
+              });
+              let fb = phase === "up" ? "Good circle!" : "Circle around...";
+              if (repCompleted) fb = "Keep circling";
+              setState(prev => ({ ...prev, reps: repCount, feedback: fb, phase, primaryAngle: phase === "up" ? 180 : 0 }));
+            } else {
+              setState(prev => ({ ...prev, feedback: "Ensure arm is visible" }));
+            }
           }
         }
 
