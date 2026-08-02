@@ -536,7 +536,8 @@ function TrackerContent() {
               </span>
               <button
                 onClick={() => setSets(Math.max(1, sets - 1))}
-                className="w-5 h-5 rounded bg-parchment/15 flex items-center justify-center text-warm-sand hover:bg-parchment/25 transition-colors"
+                aria-label="Decrease sets"
+                className="relative w-5 h-5 rounded bg-parchment/15 flex items-center justify-center text-warm-sand hover:bg-parchment/25 transition-colors before:absolute before:-inset-2 before:content-['']"
               >
                 <Minus className="w-2.5 h-2.5" />
               </button>
@@ -550,7 +551,8 @@ function TrackerContent() {
               )}
               <button
                 onClick={() => setSets(sets + 1)}
-                className="w-5 h-5 rounded bg-parchment/15 flex items-center justify-center text-warm-sand hover:bg-parchment/25 transition-colors"
+                aria-label="Increase sets"
+                className="relative w-5 h-5 rounded bg-parchment/15 flex items-center justify-center text-warm-sand hover:bg-parchment/25 transition-colors before:absolute before:-inset-2 before:content-['']"
               >
                 <Plus className="w-2.5 h-2.5" />
               </button>

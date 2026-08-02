@@ -247,6 +247,39 @@ function getPostureChecks(exercise: ExerciseType): PostureCheck[] {
   return checks;
 }
 
+// The 13 landmarks that outline a full body silhouette (head, shoulders,
+// elbows, wrists, hips, knees, ankles). Every exercise needs all of these
+// visible — the pose engine can't compute any joint angle from a cropped body.
+const FULL_BODY_LANDMARKS = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28];
+const LOWER_BODY_LANDMARKS = [23, 24, 25, 26, 27, 28];
+const UPPER_BODY_LANDMARKS = [11, 12, 13, 14, 15, 16];
+
+// Tells the user exactly how to reposition so their whole body is in frame.
+// Returns null once the full body is visible and centered.
+function getPositioningFeedback(landmarks: { x: number; y: number; visibility: number }[]): string | null {
+  const missing = FULL_BODY_LANDMARKS.filter((i) => landmarks[i].visibility < 0.5);
+  if (missing.length === 0) {
+    // All key points visible — check they're not clipped at the frame edge.
+    const pts = FULL_BODY_LANDMARKS.map((i) => landmarks[i]);
+    const minX = Math.min(...pts.map((p) => p.x));
+    const maxX = Math.max(...pts.map((p) => p.x));
+    const minY = Math.min(...pts.map((p) => p.y));
+    if (minX < 0.04 || maxX > 0.96) return "Move to the center of the frame";
+    if (minY < 0.02) return "Step back a little, your head is close to the top of the frame";
+    return null;
+  }
+
+  const missingLower = LOWER_BODY_LANDMARKS.some((i) => missing.includes(i));
+  const missingUpper = UPPER_BODY_LANDMARKS.some((i) => missing.includes(i));
+  const missingHead = missing.includes(0);
+
+  if (missingLower && missingUpper) return "Step back so your whole body is visible";
+  if (missingLower) return "Step back so your legs and feet are visible";
+  if (missingUpper) return "Move back so your arms are fully visible";
+  if (missingHead) return "Adjust the camera so your head is visible";
+  return "Step back so your whole body is visible";
+}
+
 // Feedback messages per exercise for different phases
 function getExerciseFeedback(exercise: ExerciseType, phase: RepPhase, repCompleted: boolean): string {
   if (repCompleted) {
@@ -427,6 +460,16 @@ export const usePoseTracker = (
 
   const repCounterRef = useRef(createRepCounter());
   const postureThrottleRef = useRef(0);
+  // Sticks to the last-picked body side unless the other side is clearly more
+  // visible, so near-50/50 visibility doesn't flip sides every frame and jolt the angle.
+  const lockedSideRef = useRef<"l" | "r" | null>(null);
+  const pickLeft = useCallback((lVis: number, rVis: number) => {
+    const locked = lockedSideRef.current;
+    const useLeft =
+      locked === "l" ? lVis >= rVis - 0.15 : locked === "r" ? lVis > rVis + 0.15 : lVis > rVis;
+    lockedSideRef.current = useLeft ? "l" : "r";
+    return useLeft;
+  }, []);
 
   // Use a ref for exerciseType so onResults stays stable and
   // MediaPipe doesn't tear down / reinitialize on every switch.
@@ -436,6 +479,7 @@ export const usePoseTracker = (
   // Reset rep counter when the exercise changes
   useEffect(() => {
     repCounterRef.current.reset();
+    lockedSideRef.current = null;
     setState((prev) => ({
       ...prev,
       reps: 0,
@@ -497,13 +541,15 @@ export const usePoseTracker = (
           ) / landmarks.length;
         const precision = Math.round(avgVisibility * 100);
 
-        // Check minimum body visibility
-        const visibleCount = landmarks.filter((lm: { visibility: number }) => lm.visibility > 0.5).length;
-        if (visibleCount < 10) {
+        // Every exercise requires the whole body in frame — gate tracking
+        // behind a positioning check and tell the user exactly how to fix it.
+        const positioningFeedback = getPositioningFeedback(landmarks);
+        if (positioningFeedback) {
           setState((prev) => ({
             ...prev,
             precision,
-            feedback: "Move back so your full body is visible",
+            phase: "idle",
+            feedback: positioningFeedback,
           }));
           canvasCtx.restore();
           return;
@@ -534,7 +580,7 @@ export const usePoseTracker = (
           const rVis = (rS.visibility + rE.visibility + rW.visibility) / 3;
 
           if (lVis > 0.5 || rVis > 0.5) {
-            const side = lVis > rVis ? { s: lS, e: lE, w: lW } : { s: rS, e: rE, w: rW };
+            const side = pickLeft(lVis, rVis) ? { s: lS, e: lE, w: lW } : { s: rS, e: rE, w: rW };
             const angle = calculateAngle(side.s, side.e, side.w);
             const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
             const postureFb = checkPosture();
@@ -555,7 +601,7 @@ export const usePoseTracker = (
           const rVis = (rH.visibility + rK.visibility + rA.visibility) / 3;
 
           if (lVis > 0.5 || rVis > 0.5) {
-            const side = lVis > rVis ? { h: lH, k: lK, a: lA } : { h: rH, k: rK, a: rA };
+            const side = pickLeft(lVis, rVis) ? { h: lH, k: lK, a: lA } : { h: rH, k: rK, a: rA };
             const angle = calculateAngle(side.h, side.k, side.a);
             const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
             const postureFb = checkPosture();
@@ -576,7 +622,7 @@ export const usePoseTracker = (
           const rVis = (rS.visibility + rH.visibility + rK.visibility) / 3;
 
           if (lVis > 0.5 || rVis > 0.5) {
-            const side = lVis > rVis ? { s: lS, h: lH, k: lK } : { s: rS, h: rH, k: rK };
+            const side = pickLeft(lVis, rVis) ? { s: lS, h: lH, k: lK } : { s: rS, h: rH, k: rK };
             const angle = calculateAngle(side.s, side.h, side.k);
             const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
             const postureFb = checkPosture();
@@ -597,7 +643,7 @@ export const usePoseTracker = (
           const rVis = (rH.visibility + rS.visibility + rW.visibility) / 3;
 
           if (lVis > 0.5 || rVis > 0.5) {
-            const side = lVis > rVis ? { h: lH, s: lS, w: lW } : { h: rH, s: rS, w: rW };
+            const side = pickLeft(lVis, rVis) ? { h: lH, s: lS, w: lW } : { h: rH, s: rS, w: rW };
             const angle = calculateAngle(side.h, side.s, side.w);
             const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, config);
             const postureFb = checkPosture();
@@ -693,7 +739,8 @@ export const usePoseTracker = (
             const rVis = (rK.visibility + rA.visibility + rF.visibility) / 3;
 
             if (lVis > 0.5 || rVis > 0.5) {
-              const side = lVis > rVis ? { k: lK, a: lA, f: lF } : { k: rK, a: rA, f: rF };
+              const useLeft = pickLeft(lVis, rVis);
+              const side = useLeft ? { k: lK, a: lA, f: lF } : { k: rK, a: rA, f: rF };
               const angle = calculateAngle(side.k, side.a, side.f);
               const { phase, repCount, repCompleted } = repCounterRef.current.update(angle, {
                 up: { min: 160, max: 180 }, down: { min: 0, max: 130 },
@@ -708,10 +755,10 @@ export const usePoseTracker = (
               }
               // Posture: keep knees straight
               const lH = landmarks[23]; const rH = landmarks[24];
-              if (lVis > rVis && lH.visibility > 0.5) {
+              if (useLeft && lH.visibility > 0.5) {
                 const kneeAngle = calculateAngle(lH, lK, lA);
                 if (kneeAngle < 160) fb = "Keep your knees straight";
-              } else if (rVis >= lVis && rH.visibility > 0.5) {
+              } else if (!useLeft && rH.visibility > 0.5) {
                 const kneeAngle = calculateAngle(rH, rK, rA);
                 if (kneeAngle < 160) fb = "Keep your knees straight";
               }
@@ -731,7 +778,7 @@ export const usePoseTracker = (
             if (lVis > 0.5 || rVis > 0.5) {
               // Use the side with better visibility; measure hip abduction as
               // the angle between the torso line and the thigh
-              const side = lVis > rVis
+              const side = pickLeft(lVis, rVis)
                 ? { s: lS, h: lH, k: lK }
                 : { s: rS, h: rH, k: rK };
               const angle = calculateAngle(side.s, side.h, side.k);
@@ -788,7 +835,7 @@ export const usePoseTracker = (
             const rVis = (rS.visibility + rW.visibility + rH.visibility) / 3;
 
             if (lVis > 0.5 || rVis > 0.5) {
-              const side = lVis > rVis
+              const side = pickLeft(lVis, rVis)
                 ? { s: lS, e: lE, w: lW, h: lH }
                 : { s: rS, e: rE, w: rW, h: rH };
               // Track arm abduction angle (hip-shoulder-wrist) for circle detection
@@ -828,7 +875,7 @@ export const usePoseTracker = (
 
       canvasCtx.restore();
     },
-    [canvasRef, videoElement],
+    [canvasRef, videoElement, pickLeft],
   );
 
   useEffect(() => {

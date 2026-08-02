@@ -102,36 +102,36 @@ export function HUD({
   return (
     <div className="absolute inset-0 pointer-events-none z-20">
       {/* Exercise label — Top center */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2">
-        <div className="bg-charcoal/60 backdrop-blur-xl border border-white/10 px-8 py-3 rounded-full flex items-center gap-4 shadow-2xl">
+      <div className="absolute top-3 sm:top-6 left-1/2 -translate-x-1/2 max-w-[90vw]">
+        <div className="bg-charcoal/60 backdrop-blur-xl border border-white/10 px-4 sm:px-8 py-2 sm:py-3 rounded-full flex items-center gap-2 sm:gap-4 shadow-2xl min-w-0">
           <div
-            className={`w-2 h-2 rounded-full ${phase === "idle" ? "bg-warm-sand/50" : "bg-sage animate-pulse"}`}
+            className={`w-2 h-2 rounded-full flex-shrink-0 ${phase === "idle" ? "bg-warm-sand/50" : "bg-sage animate-pulse"}`}
           />
-          <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white tracking-wide">
+          <span className="font-serif text-base sm:text-2xl md:text-4xl lg:text-5xl text-white tracking-wide truncate min-w-0">
             {exercise.type}
           </span>
-          <span className="text-[10px] text-warm-sand/70 tracking-widest uppercase self-end mb-1.5 ml-2">
+          <span className="text-[9px] sm:text-[10px] text-warm-sand/70 tracking-widest uppercase self-end mb-1 sm:mb-1.5 ml-1 sm:ml-2 flex-shrink-0">
             {phase === "idle" ? "READY" : phase}
           </span>
         </div>
       </div>
 
       {/* Rep counter & Arc — Bottom left */}
-      <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8">
-        <div className="bg-charcoal/60 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-3xl flex items-center gap-5 shadow-2xl">
-          <div className="text-center min-w-[60px]">
+      <div className="absolute bottom-3 left-3 sm:bottom-8 sm:left-8">
+        <div className="bg-charcoal/60 backdrop-blur-xl border border-white/10 px-3 sm:px-6 py-2 sm:py-4 rounded-3xl flex items-center gap-3 sm:gap-5 shadow-2xl">
+          <div className="text-center min-w-[40px] sm:min-w-[60px]">
             <div
               key={pulseKey}
-              className="font-serif text-5xl sm:text-6xl font-semibold text-white animate-pulse"
+              className="font-serif text-3xl sm:text-6xl font-semibold text-white animate-pulse"
               style={{ lineHeight: 1 }}
             >
               {repCount}
             </div>
-            <div className="text-[9px] text-warm-sand/60 font-medium uppercase tracking-[0.2em] mt-2">
+            <div className="text-[8px] sm:text-[9px] text-warm-sand/60 font-medium uppercase tracking-[0.2em] mt-1 sm:mt-2">
               reps
             </div>
           </div>
-          <div className="w-px h-12 bg-white/10" />
+          <div className="w-px h-8 sm:h-12 bg-white/10" />
           <RomArc angle={primaryAngle} minAngle={minAngle} maxAngle={maxAngle} />
         </div>
       </div>

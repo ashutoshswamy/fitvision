@@ -394,43 +394,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats Ribbon */}
-      <section className="relative z-10 py-16 sm:py-20 bg-parchment">
-        <div className="max-w-[75rem] mx-auto px-6">
-          <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6 }}
-          >
-            {[
-              { value: "33", label: "Key Joints Tracked", suffix: "" },
-              { value: "99.4", label: "Tracking Precision", suffix: "%" },
-              { value: "0", label: "Data Sent to Cloud", suffix: "ms" },
-              { value: "51", label: "Exercises Supported", suffix: "+" },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                className="text-center group"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-              >
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-charcoal mb-2 tracking-tight">
-                  {stat.value}
-                  <span className="text-terracotta">{stat.suffix}</span>
-                </div>
-                <div className="text-[10px] tracking-[0.2em] uppercase font-semibold text-driftwood/70">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* The Process Section */}
       <section
         id="process"
