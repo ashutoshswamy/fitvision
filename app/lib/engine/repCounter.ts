@@ -5,14 +5,10 @@ export interface PhaseConfig {
 
 export type RepPhase = 'idle' | 'up' | 'down';
 
-// Frames a landmark must stay in "down" before a rep is armed, filters single-frame jitter/side-flips.
-const MIN_DOWN_STREAK = 3;
-
 export function createRepCounter() {
   let phase: RepPhase = 'idle';
   let repCount = 0;
   let wasDown = false;
-  let downStreak = 0;
 
   function update(angle: number, phaseConfig: PhaseConfig) {
     let repCompleted = false;
@@ -21,17 +17,14 @@ export function createRepCounter() {
 
     if (isDown) {
       phase = 'down';
-      downStreak++;
-      if (downStreak >= MIN_DOWN_STREAK) wasDown = true;
+      wasDown = true;
     } else if (isUp && wasDown) {
       phase = 'up';
       repCount++;
       wasDown = false;
-      downStreak = 0;
       repCompleted = true;
     } else if (isUp) {
       phase = 'up';
-      downStreak = 0;
     }
 
     return { phase, repCount, repCompleted };
@@ -41,7 +34,6 @@ export function createRepCounter() {
     phase = 'idle';
     repCount = 0;
     wasDown = false;
-    downStreak = 0;
   }
   
   function getState() {
