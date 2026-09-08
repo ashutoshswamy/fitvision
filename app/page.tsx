@@ -456,49 +456,48 @@ export default function Home() {
             <div className="w-16 h-px bg-warm-sand"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 relative">
-            {/* Connecting line */}
-            <div className="hidden md:block absolute top-[3.5rem] left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-warm-sand/50 to-transparent -z-10"></div>
-
+          <div className="grid grid-cols-1 md:grid-cols-3 border-t border-warm-sand/40">
             {[
               {
                 num: "01",
                 title: "Position",
                 desc: "Step into the frame. The spatial AI instantly recognizes 33 key joints without any calibration required.",
-                icon: <Eye className="w-5 h-5" />,
-                gradient: "from-terracotta/10 to-transparent",
+                icon: <Eye className="w-4 h-4" />,
               },
               {
                 num: "02",
                 title: "Perform",
                 desc: "Execute your movement. Dynamic guidelines overlay your feed, offering silent but precise feedback.",
-                icon: <Zap className="w-5 h-5" />,
-                gradient: "from-sage/10 to-transparent",
+                icon: <Zap className="w-4 h-4" />,
               },
               {
                 num: "03",
                 title: "Perfect",
                 desc: "Adjust your posture through real-time angle analysis, protecting your joints and maximizing effort.",
-                icon: <Target className="w-5 h-5" />,
-                gradient: "from-muted-clay/10 to-transparent",
+                icon: <Target className="w-4 h-4" />,
               },
             ].map((step, i) => (
               <motion.div
                 key={i}
-                className={`relative flex flex-col items-center text-center group bg-gradient-to-b ${step.gradient} rounded-3xl p-8 md:p-10 border border-warm-sand/30 hover:border-warm-sand/60 transition-all duration-500 hover:shadow-lg hover:-translate-y-1`}
+                className="group relative flex flex-col py-10 md:px-8 md:py-12 border-warm-sand/40 border-t first:border-t-0 md:border-t-0 md:border-l md:first:border-l-0"
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: i * 0.15, duration: 0.5 }}
+                transition={{ delay: i * 0.12, duration: 0.5 }}
               >
-                <div className="w-20 h-20 rounded-full bg-parchment border border-warm-sand flex items-center justify-center mb-8 shadow-sm relative">
-                  <span className="text-xl font-light text-terracotta">{step.num}</span>
-                  <div className="absolute -inset-2 rounded-full border border-warm-sand/40 scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-500"></div>
+                <span
+                  className="absolute -top-px left-0 md:left-8 h-px w-10 bg-terracotta transition-all duration-500 group-hover:w-16"
+                  aria-hidden
+                />
+                <div className="flex items-baseline gap-4 mb-8">
+                  <span className="text-4xl md:text-5xl font-light text-warm-sand tracking-tight tabular-nums">
+                    {step.num}
+                  </span>
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full border border-warm-sand/60 text-sage">
+                    {step.icon}
+                  </span>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-parchment border border-warm-sand/50 flex items-center justify-center text-sage mb-5">
-                  {step.icon}
-                </div>
-                <h3 className="text-xl font-medium text-charcoal mb-4 tracking-wide">
+                <h3 className="text-xl md:text-2xl font-medium text-charcoal mb-3 tracking-tight">
                   {step.title}
                 </h3>
                 <p className="text-driftwood leading-relaxed font-light text-sm max-w-xs">
@@ -518,9 +517,6 @@ export default function Home() {
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-terracotta/[0.05] blur-[120px]" />
         <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-sage/[0.05] blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] text-[6rem] sm:text-[10rem] md:text-[15rem] font-bold text-parchment pointer-events-none tracking-tighter">
-          FITVISION
-        </div>
 
         <div className="max-w-[75rem] mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-12 md:mb-24">
