@@ -242,19 +242,6 @@ export default function Home() {
               animate="visible"
               variants={stagger}
             >
-              <motion.div
-                variants={fadeUp}
-                custom={0}
-                className="flex items-center gap-4 text-[10px] text-terracotta tracking-[0.3em] font-semibold uppercase mb-8 ml-1"
-              >
-                <span className="w-8 h-px bg-terracotta"></span>
-                <span>Spatial AI</span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-terracotta/10 text-terracotta text-[9px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-terracotta animate-pulse" />
-                  Live
-                </span>
-              </motion.div>
-
               <motion.h1
                 variants={fadeUp}
                 custom={1}
@@ -712,9 +699,6 @@ export default function Home() {
             {/* Background decoration */}
             <div className="absolute top-0 left-0 w-80 h-80 bg-sage/[0.06] rounded-full blur-[100px]" />
             <div className="absolute bottom-0 right-0 w-64 h-64 bg-terracotta/[0.05] rounded-full blur-[80px]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.015] text-[8rem] sm:text-[12rem] font-bold text-parchment pointer-events-none tracking-tighter">
-              NOURISH
-            </div>
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
