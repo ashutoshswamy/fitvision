@@ -189,6 +189,23 @@ export default function DashboardPage() {
                 </span>
               </Link>
             </Reveal>
+            <Reveal delay={0.24}>
+              <Link
+                href="/meal-prep"
+                className="group flex h-full flex-col justify-between gap-8 rounded-[20px] bg-warm-sand/35 p-8 transition-colors duration-300 hover:bg-warm-sand/55"
+              >
+                <div>
+                  <h2 className="font-display text-2xl font-semibold tracking-tight">Plan your meals</h2>
+                  <p className="mt-2 leading-relaxed text-driftwood">
+                    A week of meals with recipes, a grocery list and macros.
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-2 text-sm font-semibold">
+                  Create a meal plan
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </Reveal>
           </div>
         </div>
         <p className="mt-6 text-sm text-driftwood">
