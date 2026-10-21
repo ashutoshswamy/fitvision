@@ -21,8 +21,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import { AppNav } from "../components/AppNav";
-import { SiteFooter } from "../components/SiteFooter";
+import { PageShell, PageHeader } from "../components/ui";
 
 interface Exercise {
   name: string;
@@ -221,49 +220,13 @@ export default function SuggestionsPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
-      {/* Navigation */}
-      <AppNav />
+    <PageShell>
 
-      {/* Header */}
-      <section className="pt-28 sm:pt-32 pb-8 sm:pb-12 px-4 sm:px-6">
-        <div className="max-w-[60rem] mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex items-center gap-4 text-xs text-terracotta font-semibold mb-6"
-          >
-            <span className="w-8 h-px bg-terracotta" />
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>AI-Powered Insights</span>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl sm:text-4xl md:text-6xl tracking-tighter text-charcoal leading-[1] mb-4 sm:mb-6"
-          >
-            Personalized{" "}
-            <span className="text-terracotta">
-              exercise plan.
-            </span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-base sm:text-lg text-driftwood max-w-xl leading-relaxed"
-          >
-            Tell us about yourself and your goals. Our AI will craft a tailored
-            weekly exercise plan just for you.
-          </motion.p>
-        </div>
-      </section>
+      <PageHeader title="Personalised" accent="exercise plan." intro="Tell us about yourself and your goals. The AI builds a weekly plan around you." />
 
       {/* Main Content */}
-      <section className="pb-20 sm:pb-32 px-4 sm:px-6">
-        <div className="max-w-[60rem] mx-auto">
+      <section className="pb-20 sm:pb-32 px-5 sm:px-8">
+        <div className="max-w-[84rem] mx-auto">
           <AnimatePresence mode="wait">
             {step === "form" ? (
               <motion.div
@@ -274,18 +237,18 @@ export default function SuggestionsPage() {
                 transition={{ duration: 0.5 }}
               >
                 {/* Form */}
-                <div className="bg-linen/60 rounded-2xl sm:rounded-3xl border border-warm-sand/30 p-5 sm:p-8 md:p-12 space-y-8 sm:space-y-10">
+                <div className="bg-linen rounded-[20px] p-6 sm:p-10 md:p-12 space-y-10 lg:max-w-4xl">
                   {/* Basic Info */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         1
                       </span>
                       Basic Information
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Age
                         </label>
                         <input
@@ -295,11 +258,11 @@ export default function SuggestionsPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, age: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Gender
                         </label>
                         <select
@@ -307,7 +270,7 @@ export default function SuggestionsPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, gender: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 text-sm appearance-none"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 text-sm appearance-none"
                         >
                           <option value="">Select</option>
                           {genderOptions.map((g) => (
@@ -318,7 +281,7 @@ export default function SuggestionsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Height (cm)
                         </label>
                         <input
@@ -328,11 +291,11 @@ export default function SuggestionsPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, height: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Weight (kg)
                         </label>
                         <input
@@ -342,7 +305,7 @@ export default function SuggestionsPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, weight: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         />
                       </div>
                     </div>
@@ -350,8 +313,8 @@ export default function SuggestionsPage() {
 
                   {/* Fitness Level */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         2
                       </span>
                       Fitness Level
@@ -363,7 +326,7 @@ export default function SuggestionsPage() {
                           onClick={() =>
                             setFormData({ ...formData, fitnessLevel: level })
                           }
-                          className={`px-5 py-2.5 rounded-full text-xs font-semibold border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-sm font-semibold border transition-all duration-300 ${
                             formData.fitnessLevel === level
                               ? "bg-terracotta text-parchment border-terracotta"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-terracotta/50"
@@ -377,12 +340,12 @@ export default function SuggestionsPage() {
 
                   {/* Goals */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         3
                       </span>
                       Your Goals
-                      <span className="text-xs text-warm-sand font-normal">
+                      <span className="text-xs text-driftwood font-normal">
                         (select multiple)
                       </span>
                     </h2>
@@ -391,7 +354,7 @@ export default function SuggestionsPage() {
                         <button
                           key={goal}
                           onClick={() => handleGoalToggle(goal)}
-                          className={`px-5 py-2.5 rounded-full text-xs font-medium border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-300 ${
                             formData.goals.includes(goal)
                               ? "bg-sage text-parchment border-sage"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-sage/50"
@@ -405,15 +368,15 @@ export default function SuggestionsPage() {
 
                   {/* Health & Preferences */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         4
                       </span>
                       Health & Preferences
                     </h2>
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Pre-existing conditions or injuries
                         </label>
                         <textarea
@@ -426,11 +389,11 @@ export default function SuggestionsPage() {
                             })
                           }
                           rows={3}
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm resize-none"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm resize-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Exercise preferences
                         </label>
                         <textarea
@@ -443,7 +406,7 @@ export default function SuggestionsPage() {
                             })
                           }
                           rows={3}
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm resize-none"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm resize-none"
                         />
                       </div>
                     </div>
@@ -454,7 +417,7 @@ export default function SuggestionsPage() {
                     <button
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="group relative inline-flex items-center justify-between px-8 py-4 bg-terracotta text-parchment rounded-full overflow-hidden transition-all duration-500 hover:bg-charcoal w-full sm:w-auto sm:min-w-[280px] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="group relative inline-flex items-center justify-between px-8 py-4 bg-charcoal text-parchment rounded-full overflow-hidden transition-all duration-300 hover:bg-terracotta w-full sm:w-auto sm:min-w-[280px] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {loading ? (
                         <span className="flex items-center gap-3 mx-auto">
@@ -475,7 +438,7 @@ export default function SuggestionsPage() {
                         </>
                       )}
                     </button>
-                    <p className="text-xs text-warm-sand">
+                    <p className="text-xs text-driftwood">
                       Results are AI-generated and not medical advice
                     </p>
                   </div>
@@ -527,14 +490,14 @@ export default function SuggestionsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.2 }}
-                      className="bg-linen/80 rounded-2xl border border-warm-sand/40 p-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
+                      className="bg-linen/80 rounded-[20px] border border-driftwood/30 p-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
                     >
                       <input
                         type="text"
                         placeholder="Name your plan (e.g., 'Summer Shred')"
                         value={planName}
                         onChange={(e) => setPlanName(e.target.value)}
-                        className="flex-1 bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                        className="flex-1 bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         autoFocus
                       />
                       <div className="flex items-center gap-3">
@@ -552,7 +515,7 @@ export default function SuggestionsPage() {
                         </button>
                         <button
                           onClick={() => setShowSaveDialog(false)}
-                          className="px-4 py-3 rounded-xl text-xs font-medium text-driftwood hover:text-charcoal border border-warm-sand/40 hover:border-warm-sand transition-colors duration-300"
+                          className="px-4 py-3 rounded-xl text-xs font-medium text-driftwood hover:text-charcoal border border-driftwood/30 hover:border-warm-sand transition-colors duration-300"
                         >
                           Cancel
                         </button>
@@ -562,7 +525,7 @@ export default function SuggestionsPage() {
                 </AnimatePresence>
 
                 {results?.error ? (
-                  <div className="bg-terracotta/10 border border-terracotta/30 rounded-2xl p-8 text-center">
+                  <div className="bg-terracotta/10 border border-terracotta/30 rounded-[20px] p-8 text-center">
                     <AlertTriangle className="w-8 h-8 text-terracotta mx-auto mb-4" />
                     <p className="text-charcoal font-medium mb-2">
                       Something went wrong
@@ -570,7 +533,7 @@ export default function SuggestionsPage() {
                     <p className="text-driftwood text-sm">{results.error}</p>
                   </div>
                 ) : results?.raw ? (
-                  <div className="bg-linen/60 rounded-2xl border border-warm-sand/30 p-8">
+                  <div className="bg-linen/60 rounded-[20px] border border-warm-sand/30 p-8">
                     <p className="text-driftwood whitespace-pre-wrap text-sm leading-relaxed">
                       {results.raw}
                     </p>
@@ -582,7 +545,7 @@ export default function SuggestionsPage() {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
-                      className="bg-linen/60 rounded-2xl border border-warm-sand/30 p-8"
+                      className="bg-linen/60 rounded-[20px] border border-warm-sand/30 p-8"
                     >
                       <div className="flex items-center gap-3 mb-4">
                         <Sparkles className="w-5 h-5 text-terracotta" />
@@ -615,7 +578,7 @@ export default function SuggestionsPage() {
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.25 + i * 0.05 }}
-                          className="bg-linen/60 rounded-2xl border border-warm-sand/30 overflow-hidden"
+                          className="bg-linen/60 rounded-[20px] border border-warm-sand/30 overflow-hidden"
                         >
                           <button
                             onClick={() =>
@@ -648,7 +611,7 @@ export default function SuggestionsPage() {
                                 className="overflow-hidden"
                               >
                                 <div className="px-6 pb-6 space-y-3">
-                                  <div className="text-xs text-warm-sand mb-2">
+                                  <div className="text-xs text-driftwood mb-2">
                                     Rest: {day.restPeriod}
                                   </div>
                                   {day.exercises?.map((ex, j) => (
@@ -689,7 +652,7 @@ export default function SuggestionsPage() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-sage/5 rounded-2xl border border-sage/20 p-8"
+                        className="bg-sage/5 rounded-[20px] border border-sage/20 p-8"
                       >
                         <div className="flex items-center gap-3 mb-5">
                           <Lightbulb className="w-5 h-5 text-sage" />
@@ -717,7 +680,7 @@ export default function SuggestionsPage() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
-                        className="bg-terracotta/5 rounded-2xl border border-terracotta/20 p-8"
+                        className="bg-terracotta/5 rounded-[20px] border border-terracotta/20 p-8"
                       >
                         <div className="flex items-center gap-3 mb-5">
                           <AlertTriangle className="w-5 h-5 text-terracotta" />
@@ -746,7 +709,7 @@ export default function SuggestionsPage() {
                           initial={{ opacity: 0, y: 16 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.6 }}
-                          className="bg-linen/60 rounded-2xl border border-warm-sand/30 p-8"
+                          className="bg-linen/60 rounded-[20px] border border-warm-sand/30 p-8"
                         >
                           <div className="flex items-center gap-3 mb-5">
                             <Dumbbell className="w-5 h-5 text-muted-clay" />
@@ -775,7 +738,7 @@ export default function SuggestionsPage() {
 
                     {/* Disclaimer note */}
                     <div className="text-center pt-4">
-                      <p className="text-xs text-warm-sand">
+                      <p className="text-xs text-driftwood">
                         AI-generated suggestions — not a substitute for
                         professional medical advice.{" "}
                         <Link
@@ -796,7 +759,7 @@ export default function SuggestionsPage() {
 
       {/* Saved Plans Section */}
       {isSignedIn && (
-        <section className="bg-linen/40 py-12 sm:py-16 px-4 sm:px-8">
+        <section className="bg-linen/40 py-16 px-5 sm:px-8">
           <div className="max-w-[52rem] mx-auto">
             <button
               onClick={() => setShowSavedPlans(!showSavedPlans)}
@@ -845,7 +808,7 @@ export default function SuggestionsPage() {
                         <motion.div
                           key={plan.id}
                           layout
-                          className={`bg-parchment rounded-2xl border p-6 transition-all duration-300 ${
+                          className={`bg-parchment rounded-[20px] border p-6 transition-all duration-300 ${
                             plan.is_active
                               ? "border-terracotta/50 shadow-md"
                               : "border-warm-sand/30 hover:border-warm-sand/60"
@@ -864,7 +827,7 @@ export default function SuggestionsPage() {
                               <p className="text-driftwood text-xs line-clamp-2">
                                 {plan.summary || "No summary available"}
                               </p>
-                              <p className="text-warm-sand text-xs mt-1.5">
+                              <p className="text-driftwood text-xs mt-1.5">
                                 {new Date(plan.created_at).toLocaleDateString(
                                   undefined,
                                   {
@@ -884,7 +847,7 @@ export default function SuggestionsPage() {
                               </Link>
                               <button
                                 onClick={() => handleLoadPlan(plan)}
-                                className="px-4 py-2 rounded-xl text-xs font-semibold text-charcoal border border-warm-sand/40 hover:border-charcoal transition-colors duration-300"
+                                className="px-4 py-2 rounded-xl text-xs font-semibold text-charcoal border border-driftwood/30 hover:border-charcoal transition-colors duration-300"
                               >
                                 View
                               </button>
@@ -917,8 +880,7 @@ export default function SuggestionsPage() {
         </section>
       )}
 
-      {/* Footer */}
-      <SiteFooter />
-    </div>
+      
+    </PageShell>
   );
 }

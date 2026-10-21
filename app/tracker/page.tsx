@@ -11,12 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { CameraTracker } from "../components/CameraTracker";
 import { SidebarMetrics } from "../components/SidebarMetrics";
 import { ExerciseType, EXERCISES } from "../lib/exercises";
-import Link from "next/link";
-import Image from "next/image";
 import {
-  LogIn,
-  Menu,
-  X,
   ChevronDown,
   ChevronUp,
   Save,
@@ -27,7 +22,8 @@ import {
   PartyPopper,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import { AppNav } from "../components/AppNav";
 
 // ─── Plan-related types ─────────────────────────────────────
 interface PlanExercise {
@@ -222,7 +218,6 @@ function TrackerContent() {
     feedback: "Initializing...",
     precision: 0,
   });
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showMobileMetrics, setShowMobileMetrics] = useState(false);
   const [sets, setSets] = useState(1);
   const [saving, setSaving] = useState(false);
@@ -361,132 +356,12 @@ function TrackerContent() {
 
   return (
     <div className="min-h-[100dvh] bg-charcoal text-parchment font-sans selection:bg-sage selection:text-parchment">
-      {/* Top Navigation Bar */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-0 w-full z-50 flex items-center justify-between px-4 sm:px-8 py-3 sm:py-5 bg-gradient-to-b from-charcoal to-transparent"
-      >
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo-nobg.png"
-            alt="FitVision"
-            width={120}
-            height={32}
-            className="h-6 sm:h-8 w-auto"
-          />
-          <span className="font-display font-semibold text-lg sm:text-xl tracking-wide">
-            FitVision
-          </span>
-        </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link
-            href={isSignedIn ? "/dashboard" : "/sign-in"}
-            className="text-warm-sand hover:text-parchment transition-colors"
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="/#philosophy"
-            className="text-warm-sand hover:text-parchment transition-colors"
-          >
-            Philosophy
-          </Link>
-          <Link
-            href="/#process"
-            className="text-warm-sand hover:text-parchment transition-colors"
-          >
-            Method
-          </Link>
-          {isSignedIn ? (
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8",
-                },
-              }}
-            />
-          ) : (
-            <Link
-              href="/sign-in"
-              className="flex items-center gap-1.5 text-warm-sand hover:text-parchment transition-colors"
-            >
-              <LogIn className="w-4 h-4" /> Sign In
-            </Link>
-          )}
-        </div>
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 text-parchment"
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? (
-            <X className="w-5 h-5" />
-          ) : (
-            <Menu className="w-5 h-5" />
-          )}
-        </button>
-      </motion.nav>
-
-      {/* Mobile nav dropdown */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-14 left-0 right-0 z-50 bg-charcoal/95 backdrop-blur-md border-b border-driftwood/30 md:hidden"
-          >
-            <div className="flex flex-col gap-3 px-6 py-4 text-xs font-medium">
-              <Link
-                href={isSignedIn ? "/dashboard" : "/sign-in"}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-warm-sand hover:text-parchment transition-colors py-1"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/#philosophy"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-warm-sand hover:text-parchment transition-colors py-1"
-              >
-                Philosophy
-              </Link>
-              <Link
-                href="/#process"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-warm-sand hover:text-parchment transition-colors py-1"
-              >
-                Method
-              </Link>
-              {isSignedIn ? (
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-8 h-8",
-                    },
-                  }}
-                />
-              ) : (
-                <Link
-                  href="/sign-in"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-1.5 text-warm-sand hover:text-parchment transition-colors py-1"
-                >
-                  <LogIn className="w-4 h-4" /> Sign In
-                </Link>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AppNav variant="dark" />
 
       {/* Main Content Area */}
-      <main className="pt-16 sm:pt-24 pb-4 sm:pb-8 px-3 sm:px-8 min-h-[100dvh] md:h-[100dvh] w-full flex flex-col md:flex-row gap-4 sm:gap-6">
+      <main className="pt-24 sm:pt-28 pb-4 sm:pb-8 px-3 sm:px-8 min-h-[100dvh] md:h-[100dvh] w-full flex flex-col md:flex-row gap-4 sm:gap-6">
         {/* Camera Feed - Takes up remaining space */}
-        <section className="flex-1 relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-driftwood/40 min-h-[50vh] md:min-h-0">
+        <section className="flex-1 relative rounded-[20px] overflow-hidden shadow-2xl border border-driftwood/40 min-h-[50vh] md:min-h-0">
           <CameraTracker
             exerciseType={exercise}
             onTrackerUpdate={handleTrackerUpdate}

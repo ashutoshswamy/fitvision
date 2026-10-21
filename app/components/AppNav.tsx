@@ -18,16 +18,25 @@ const links = [
   { href: "/history", label: "History" },
 ];
 
-export function AppNav() {
+export function AppNav({ variant = "light" }: { variant?: "light" | "dark" }) {
+  const dark = variant === "dark";
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const cls = (href: string) =>
     `text-sm font-medium transition-colors duration-300 ${
-      path === href ? "text-charcoal" : "text-driftwood hover:text-charcoal"
+      dark
+        ? path === href ? "text-parchment" : "text-warm-sand hover:text-parchment"
+        : path === href ? "text-charcoal" : "text-driftwood hover:text-charcoal"
     }`;
 
   return (
-    <nav className="fixed inset-x-4 top-4 z-50 mx-auto max-w-[84rem] rounded-[28px] border border-warm-sand/40 bg-parchment/80 px-5 shadow-[0_10px_30px_-12px_rgba(60,56,49,0.25)] backdrop-blur-xl sm:inset-x-6 sm:px-6">
+    <nav
+      className={`fixed inset-x-4 top-4 z-50 mx-auto max-w-[84rem] rounded-[28px] border px-5 backdrop-blur-xl sm:inset-x-6 sm:px-6 ${
+        dark
+          ? "border-parchment/15 bg-charcoal/80 text-parchment shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)]"
+          : "border-warm-sand/40 bg-parchment/80 shadow-[0_10px_30px_-12px_rgba(60,56,49,0.25)]"
+      }`}
+    >
       <div className="flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo-nobg.png" alt="" width={120} height={32} className="h-8 w-auto" />

@@ -23,8 +23,7 @@ import {
   Flame,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import { AppNav } from "../components/AppNav";
-import { SiteFooter } from "../components/SiteFooter";
+import { PageShell, PageHeader } from "../components/ui";
 
 interface Meal {
   type: string;
@@ -295,50 +294,13 @@ export default function MealPrepPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
-      {/* Navigation */}
-      <AppNav />
+    <PageShell>
 
-      {/* Header */}
-      <section className="pt-28 sm:pt-32 pb-8 sm:pb-12 px-4 sm:px-6">
-        <div className="max-w-[60rem] mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex items-center gap-4 text-xs text-terracotta font-semibold mb-6"
-          >
-            <span className="w-8 h-px bg-terracotta" />
-            <UtensilsCrossed className="w-3.5 h-3.5" />
-            <span>AI-Powered Nutrition</span>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl sm:text-4xl md:text-6xl tracking-tighter text-charcoal leading-[1] mb-4 sm:mb-6"
-          >
-            Personalized{" "}
-            <span className="text-terracotta">
-              meal prep plan.
-            </span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-base sm:text-lg text-driftwood max-w-xl leading-relaxed"
-          >
-            Share your dietary needs and preferences. Our AI will craft a
-            tailored weekly meal prep plan with recipes, grocery lists, and
-            nutrition info.
-          </motion.p>
-        </div>
-      </section>
+      <PageHeader title="Personalised" accent="meal prep plan." intro="Share your dietary needs and preferences. Get a weekly plan with recipes, a grocery list and nutrition info." />
 
       {/* Main Content */}
-      <section className="pb-20 sm:pb-32 px-4 sm:px-6">
-        <div className="max-w-[60rem] mx-auto">
+      <section className="pb-20 sm:pb-32 px-5 sm:px-8">
+        <div className="max-w-[84rem] mx-auto">
           <AnimatePresence mode="wait">
             {step === "form" ? (
               <motion.div
@@ -348,18 +310,18 @@ export default function MealPrepPage() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="bg-linen/60 rounded-2xl sm:rounded-3xl border border-warm-sand/30 p-5 sm:p-8 md:p-12 space-y-8 sm:space-y-10">
+                <div className="bg-linen rounded-[20px] p-6 sm:p-10 md:p-12 space-y-10 lg:max-w-4xl">
                   {/* Basic Info */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         1
                       </span>
                       Basic Information
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Age
                         </label>
                         <input
@@ -369,11 +331,11 @@ export default function MealPrepPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, age: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Gender
                         </label>
                         <select
@@ -381,7 +343,7 @@ export default function MealPrepPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, gender: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 text-sm appearance-none"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 text-sm appearance-none"
                         >
                           <option value="">Select</option>
                           {genderOptions.map((g) => (
@@ -392,7 +354,7 @@ export default function MealPrepPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Height (cm)
                         </label>
                         <input
@@ -402,11 +364,11 @@ export default function MealPrepPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, height: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Weight (kg)
                         </label>
                         <input
@@ -416,7 +378,7 @@ export default function MealPrepPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, weight: e.target.value })
                           }
-                          className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                          className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         />
                       </div>
                     </div>
@@ -424,8 +386,8 @@ export default function MealPrepPage() {
 
                   {/* Activity Level */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         2
                       </span>
                       Activity Level
@@ -437,7 +399,7 @@ export default function MealPrepPage() {
                           onClick={() =>
                             setFormData({ ...formData, activityLevel: level })
                           }
-                          className={`px-5 py-2.5 rounded-full text-xs font-semibold border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-sm font-semibold border transition-all duration-300 ${
                             formData.activityLevel === level
                               ? "bg-terracotta text-parchment border-terracotta"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-terracotta/50"
@@ -451,12 +413,12 @@ export default function MealPrepPage() {
 
                   {/* Dietary Goals */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         3
                       </span>
                       Dietary Goals
-                      <span className="text-xs text-warm-sand font-normal">
+                      <span className="text-xs text-driftwood font-normal">
                         (select multiple)
                       </span>
                     </h2>
@@ -465,7 +427,7 @@ export default function MealPrepPage() {
                         <button
                           key={goal}
                           onClick={() => handleGoalToggle(goal)}
-                          className={`px-5 py-2.5 rounded-full text-xs font-medium border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-300 ${
                             formData.dietaryGoals.includes(goal)
                               ? "bg-sage text-parchment border-sage"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-sage/50"
@@ -479,12 +441,12 @@ export default function MealPrepPage() {
 
                   {/* Dietary Restrictions */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         4
                       </span>
                       Dietary Restrictions
-                      <span className="text-xs text-warm-sand font-normal">
+                      <span className="text-xs text-driftwood font-normal">
                         (if any)
                       </span>
                     </h2>
@@ -493,7 +455,7 @@ export default function MealPrepPage() {
                         <button
                           key={r}
                           onClick={() => handleRestrictionToggle(r)}
-                          className={`px-5 py-2.5 rounded-full text-xs font-medium border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-300 ${
                             formData.dietaryRestrictions.includes(r)
                               ? "bg-charcoal text-parchment border-charcoal"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-charcoal/30"
@@ -507,12 +469,12 @@ export default function MealPrepPage() {
 
                   {/* Cuisine Preferences */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         5
                       </span>
                       Cuisine Preferences
-                      <span className="text-xs text-warm-sand font-normal">
+                      <span className="text-xs text-driftwood font-normal">
                         (optional)
                       </span>
                     </h2>
@@ -521,7 +483,7 @@ export default function MealPrepPage() {
                         <button
                           key={c}
                           onClick={() => handleCuisineToggle(c)}
-                          className={`px-5 py-2.5 rounded-full text-xs font-medium border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-300 ${
                             formData.cuisinePreferences.includes(c)
                               ? "bg-driftwood text-parchment border-driftwood"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-driftwood/50"
@@ -535,15 +497,15 @@ export default function MealPrepPage() {
 
                   {/* Practical Details */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         6
                       </span>
                       Practical Details
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Cooking Skill
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -565,7 +527,7 @@ export default function MealPrepPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Budget
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -587,7 +549,7 @@ export default function MealPrepPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Meals Per Day
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -609,7 +571,7 @@ export default function MealPrepPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                        <label className="block text-sm text-charcoal font-semibold mb-2">
                           Max Prep Time Per Meal
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -635,8 +597,8 @@ export default function MealPrepPage() {
 
                   {/* Allergies */}
                   <div>
-                    <h2 className="text-lg font-medium text-charcoal tracking-wide mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-xs font-semibold">
+                    <h2 className="font-display text-2xl font-semibold text-charcoal tracking-tight mb-6 flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-terracotta/15 flex items-center justify-center text-charcoal text-sm font-semibold">
                         7
                       </span>
                       Allergies & Additional Notes
@@ -651,7 +613,7 @@ export default function MealPrepPage() {
                         })
                       }
                       rows={3}
-                      className="w-full bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm resize-none"
+                      className="w-full bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm resize-none"
                     />
                   </div>
 
@@ -660,7 +622,7 @@ export default function MealPrepPage() {
                     <button
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="group relative inline-flex items-center justify-between px-8 py-4 bg-terracotta text-parchment rounded-full overflow-hidden transition-all duration-500 hover:bg-charcoal w-full sm:w-auto sm:min-w-[280px] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="group relative inline-flex items-center justify-between px-8 py-4 bg-charcoal text-parchment rounded-full overflow-hidden transition-all duration-300 hover:bg-terracotta w-full sm:w-auto sm:min-w-[280px] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {loading ? (
                         <span className="flex items-center gap-3 mx-auto">
@@ -681,7 +643,7 @@ export default function MealPrepPage() {
                         </>
                       )}
                     </button>
-                    <p className="text-xs text-warm-sand">
+                    <p className="text-xs text-driftwood">
                       Results are AI-generated and not medical/dietary advice
                     </p>
                   </div>
@@ -733,14 +695,14 @@ export default function MealPrepPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.2 }}
-                      className="bg-linen/80 rounded-2xl border border-warm-sand/40 p-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
+                      className="bg-linen/80 rounded-[20px] border border-driftwood/30 p-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
                     >
                       <input
                         type="text"
                         placeholder="Name your plan (e.g., 'Clean Eating Week')"
                         value={planName}
                         onChange={(e) => setPlanName(e.target.value)}
-                        className="flex-1 bg-parchment border border-warm-sand/40 text-charcoal rounded-xl px-4 py-3 focus:border-terracotta focus:ring-1 focus:ring-terracotta/20 outline-none transition-all duration-300 placeholder:text-warm-sand text-sm"
+                        className="flex-1 bg-parchment border border-driftwood/30 text-charcoal rounded-xl px-4 py-3.5 focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 outline-none transition-all duration-300 placeholder:text-driftwood/60 text-sm"
                         autoFocus
                       />
                       <div className="flex items-center gap-3">
@@ -758,7 +720,7 @@ export default function MealPrepPage() {
                         </button>
                         <button
                           onClick={() => setShowSaveDialog(false)}
-                          className="px-4 py-3 rounded-xl text-xs font-medium text-driftwood hover:text-charcoal border border-warm-sand/40 hover:border-warm-sand transition-colors duration-300"
+                          className="px-4 py-3 rounded-xl text-xs font-medium text-driftwood hover:text-charcoal border border-driftwood/30 hover:border-warm-sand transition-colors duration-300"
                         >
                           Cancel
                         </button>
@@ -768,7 +730,7 @@ export default function MealPrepPage() {
                 </AnimatePresence>
 
                 {results?.error ? (
-                  <div className="bg-terracotta/10 border border-terracotta/30 rounded-2xl p-8 text-center">
+                  <div className="bg-terracotta/10 border border-terracotta/30 rounded-[20px] p-8 text-center">
                     <AlertTriangle className="w-8 h-8 text-terracotta mx-auto mb-4" />
                     <p className="text-charcoal font-medium mb-2">
                       Something went wrong
@@ -776,7 +738,7 @@ export default function MealPrepPage() {
                     <p className="text-driftwood text-sm">{results.error}</p>
                   </div>
                 ) : results?.raw ? (
-                  <div className="bg-linen/60 rounded-2xl border border-warm-sand/30 p-8">
+                  <div className="bg-linen/60 rounded-[20px] border border-warm-sand/30 p-8">
                     <p className="text-driftwood whitespace-pre-wrap text-sm leading-relaxed">
                       {results.raw}
                     </p>
@@ -788,7 +750,7 @@ export default function MealPrepPage() {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
-                      className="bg-linen/60 rounded-2xl border border-warm-sand/30 p-8"
+                      className="bg-linen/60 rounded-[20px] border border-warm-sand/30 p-8"
                     >
                       <div className="flex items-center gap-3 mb-4">
                         <Sparkles className="w-5 h-5 text-terracotta" />
@@ -860,7 +822,7 @@ export default function MealPrepPage() {
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.25 + i * 0.05 }}
-                          className="bg-linen/60 rounded-2xl border border-warm-sand/30 overflow-hidden"
+                          className="bg-linen/60 rounded-[20px] border border-warm-sand/30 overflow-hidden"
                         >
                           <button
                             onClick={() =>
@@ -1042,7 +1004,7 @@ export default function MealPrepPage() {
                           initial={{ opacity: 0, y: 16 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.35 }}
-                          className="bg-linen/60 rounded-2xl border border-warm-sand/30 overflow-hidden"
+                          className="bg-linen/60 rounded-[20px] border border-warm-sand/30 overflow-hidden"
                         >
                           <button
                             onClick={() =>
@@ -1104,7 +1066,7 @@ export default function MealPrepPage() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-driftwood/5 rounded-2xl border border-driftwood/15 p-8"
+                        className="bg-driftwood/5 rounded-[20px] border border-driftwood/15 p-8"
                       >
                         <div className="flex items-center gap-3 mb-5">
                           <Clock className="w-5 h-5 text-driftwood" />
@@ -1165,7 +1127,7 @@ export default function MealPrepPage() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.45 }}
-                        className="bg-sage/5 rounded-2xl border border-sage/20 p-8"
+                        className="bg-sage/5 rounded-[20px] border border-sage/20 p-8"
                       >
                         <div className="flex items-center gap-3 mb-5">
                           <Lightbulb className="w-5 h-5 text-sage" />
@@ -1193,7 +1155,7 @@ export default function MealPrepPage() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
-                        className="bg-terracotta/5 rounded-2xl border border-terracotta/20 p-8"
+                        className="bg-terracotta/5 rounded-[20px] border border-terracotta/20 p-8"
                       >
                         <div className="flex items-center gap-3 mb-5">
                           <AlertTriangle className="w-5 h-5 text-terracotta" />
@@ -1217,7 +1179,7 @@ export default function MealPrepPage() {
 
                     {/* Disclaimer */}
                     <div className="text-center pt-4">
-                      <p className="text-xs text-warm-sand">
+                      <p className="text-xs text-driftwood">
                         AI-generated meal plan — not a substitute for
                         professional dietary advice.{" "}
                         <Link
@@ -1238,7 +1200,7 @@ export default function MealPrepPage() {
 
       {/* Saved Plans Section */}
       {isSignedIn && (
-        <section className="bg-linen/40 py-12 sm:py-16 px-4 sm:px-8">
+        <section className="bg-linen/40 py-16 px-5 sm:px-8">
           <div className="max-w-[52rem] mx-auto">
             <button
               onClick={() => setShowSavedPlans(!showSavedPlans)}
@@ -1288,7 +1250,7 @@ export default function MealPrepPage() {
                         <motion.div
                           key={plan.id}
                           layout
-                          className="bg-parchment rounded-2xl border border-warm-sand/30 hover:border-warm-sand/60 p-6 transition-all duration-300"
+                          className="bg-parchment rounded-[20px] border border-warm-sand/30 hover:border-warm-sand/60 p-6 transition-all duration-300"
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="flex-1 min-w-0">
@@ -1298,7 +1260,7 @@ export default function MealPrepPage() {
                               <p className="text-driftwood text-xs line-clamp-2">
                                 {plan.summary || "No summary available"}
                               </p>
-                              <p className="text-warm-sand text-xs mt-1.5">
+                              <p className="text-driftwood text-xs mt-1.5">
                                 {new Date(plan.created_at).toLocaleDateString(
                                   undefined,
                                   {
@@ -1337,8 +1299,7 @@ export default function MealPrepPage() {
         </section>
       )}
 
-      {/* Footer */}
-      <SiteFooter />
-    </div>
+      
+    </PageShell>
   );
 }

@@ -5,8 +5,10 @@ import { ArrowLeft } from "lucide-react";
 export const authAppearance = {
   elements: {
     rootBox: "w-full",
-    cardBox: "w-full shadow-none",
-    card: "bg-transparent border-0 shadow-none p-0 w-full gap-6",
+    cardBox: "w-full overflow-hidden rounded-[20px] border border-warm-sand/60 bg-linen shadow-none",
+    card: "w-full gap-6 border-0 bg-transparent p-7 shadow-none [box-shadow:none] sm:p-9",
+    logoBox: "hidden",
+    logoImage: "hidden",
     headerTitle: "font-display text-3xl font-semibold tracking-tight text-charcoal",
     headerSubtitle: "text-driftwood text-base",
     socialButtonsBlockButton:
@@ -16,9 +18,9 @@ export const authAppearance = {
     dividerText: "text-driftwood text-xs",
     formFieldLabel: "text-charcoal text-sm font-medium",
     formFieldInput:
-      "bg-parchment border border-driftwood/40 text-charcoal rounded-xl py-3 focus:border-terracotta focus:ring-terracotta/25 placeholder:text-driftwood/70 transition-colors duration-300",
+      "bg-parchment border border-driftwood/40 text-charcoal rounded-xl py-3 shadow-none outline-none focus:border-terracotta focus:ring-2 focus:ring-terracotta/25 placeholder:text-driftwood/70 transition-colors duration-300",
     formButtonPrimary:
-      "bg-none bg-charcoal hover:bg-terracotta text-parchment rounded-full shadow-none transition-colors duration-300 text-sm font-semibold normal-case py-3.5",
+      "bg-none bg-charcoal hover:bg-terracotta text-parchment rounded-full shadow-none [box-shadow:none] after:hidden before:hidden transition-colors duration-300 text-sm font-semibold normal-case py-3.5",
     footerActionLink: "text-terracotta hover:text-charcoal font-semibold transition-colors duration-300",
     footerActionText: "text-driftwood text-sm",
     identityPreviewEditButton: "text-terracotta hover:text-charcoal",
@@ -26,7 +28,9 @@ export const authAppearance = {
     alertText: "text-charcoal text-sm",
     otpCodeFieldInput: "border border-driftwood/40 text-charcoal rounded-lg",
     formResendCodeLink: "text-terracotta hover:text-charcoal",
-    footer: "bg-transparent",
+    footer: "bg-none bg-transparent border-t border-warm-sand/60 [box-shadow:none]",
+    footerAction: "bg-transparent [box-shadow:none]",
+    footerPages: "bg-transparent",
   },
   layout: { socialButtonsPlacement: "top" as const, showOptionalFields: false },
 };

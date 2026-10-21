@@ -24,8 +24,7 @@ import {
   SkipForward,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import { AppNav } from "../components/AppNav";
-import { SiteFooter } from "../components/SiteFooter";
+import { PageShell, } from "../components/ui";
 import { ExerciseType, EXERCISES } from "../lib/exercises";
 
 interface Exercise {
@@ -445,9 +444,7 @@ function PlanWorkoutContent() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
-      {/* Navigation */}
-      <AppNav />
+    <PageShell>
 
       {/* Loading / No Plan states */}
       {loadingPlan ? (
@@ -456,7 +453,7 @@ function PlanWorkoutContent() {
         </div>
       ) : !plan ? (
         <div className="min-h-[100dvh] flex flex-col items-center justify-center gap-6 px-4">
-          <div className="w-16 h-16 rounded-2xl bg-warm-sand/20 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-[20px] bg-warm-sand/20 flex items-center justify-center">
             <Calendar className="w-8 h-8 text-driftwood" />
           </div>
           <div className="text-center">
@@ -478,8 +475,8 @@ function PlanWorkoutContent() {
       ) : (
         <>
           {/* Header */}
-          <section className="pt-28 sm:pt-36 pb-4 sm:pb-6 px-4 sm:px-6">
-            <div className="max-w-[75rem] mx-auto">
+          <section className="pt-28 sm:pt-36 pb-4 sm:pb-6 px-5 sm:px-8">
+            <div className="max-w-[84rem] mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -507,8 +504,8 @@ function PlanWorkoutContent() {
           </section>
 
           {/* Day Selector */}
-          <section className="pb-4 px-4 sm:px-6">
-            <div className="max-w-[75rem] mx-auto">
+          <section className="pb-4 px-5 sm:px-8">
+            <div className="max-w-[84rem] mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -526,8 +523,8 @@ function PlanWorkoutContent() {
                       selectedDayIndex === i
                         ? "bg-charcoal text-parchment border-charcoal"
                         : workoutStarted
-                          ? "bg-linen/40 text-warm-sand border-warm-sand/20 cursor-not-allowed"
-                          : "bg-parchment text-driftwood border-warm-sand/40 hover:border-charcoal/30"
+                          ? "bg-linen/40 text-driftwood border-warm-sand/20 cursor-not-allowed"
+                          : "bg-parchment text-driftwood border-driftwood/30 hover:border-charcoal/30"
                     }`}
                   >
                     <span className="block text-xs opacity-60 mb-0.5">
@@ -541,8 +538,8 @@ function PlanWorkoutContent() {
           </section>
 
           {/* Workout Content */}
-          <section className="pb-16 sm:pb-24 px-4 sm:px-6">
-            <div className="max-w-[75rem] mx-auto">
+          <section className="pb-16 sm:pb-24 px-5 sm:px-8">
+            <div className="max-w-[84rem] mx-auto">
               {todayPlan ? (
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
@@ -551,7 +548,7 @@ function PlanWorkoutContent() {
                   className="space-y-6"
                 >
                   {/* Day info card */}
-                  <div className="bg-linen/60 rounded-2xl border border-warm-sand/30 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="bg-linen/60 rounded-[20px] border border-warm-sand/30 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-3 mb-1.5">
                         <Dumbbell className="w-5 h-5 text-muted-clay" />
@@ -609,7 +606,7 @@ function PlanWorkoutContent() {
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.2 + idx * 0.05 }}
-                          className={`rounded-2xl border overflow-hidden transition-all duration-300 ${
+                          className={`rounded-[20px] border overflow-hidden transition-all duration-300 ${
                             isCompleted
                               ? "bg-sage/5 border-sage/30"
                               : isActive
@@ -705,7 +702,7 @@ function PlanWorkoutContent() {
                                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                     {/* Sets */}
                                     <div className="bg-parchment rounded-xl p-4 border border-warm-sand/20">
-                                      <label className="block text-xs text-driftwood font-semibold mb-2">
+                                      <label className="block text-sm text-charcoal font-semibold mb-2">
                                         Sets Done
                                       </label>
                                       <div className="flex items-center gap-2">
@@ -746,7 +743,7 @@ function PlanWorkoutContent() {
 
                                     {/* Reps */}
                                     <div className="bg-parchment rounded-xl p-4 border border-warm-sand/20">
-                                      <label className="block text-xs text-driftwood font-semibold mb-2">
+                                      <label className="block text-sm text-charcoal font-semibold mb-2">
                                         Rep Count
                                       </label>
                                       <div className="flex items-center gap-2">
@@ -788,7 +785,7 @@ function PlanWorkoutContent() {
                                     {/* Precision (if tracked) */}
                                     {log?.isTracked && (
                                       <div className="bg-parchment rounded-xl p-4 border border-warm-sand/20">
-                                        <label className="block text-xs text-driftwood font-semibold mb-2">
+                                        <label className="block text-sm text-charcoal font-semibold mb-2">
                                           Precision
                                         </label>
                                         <p className="text-xl text-sage">
@@ -825,7 +822,7 @@ function PlanWorkoutContent() {
                                           e.stopPropagation();
                                           setActiveExerciseIdx(idx + 1);
                                         }}
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium text-driftwood border border-warm-sand/40 hover:border-driftwood transition-colors"
+                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium text-driftwood border border-driftwood/30 hover:border-driftwood transition-colors"
                                       >
                                         <SkipForward className="w-3.5 h-3.5" />{" "}
                                         Skip
@@ -847,7 +844,7 @@ function PlanWorkoutContent() {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: 0.2 }}
-                      className="bg-linen rounded-2xl border border-warm-sand/30 p-6 sm:p-8"
+                      className="bg-linen rounded-[20px] border border-warm-sand/30 p-6 sm:p-8"
                     >
                       {saved ? (
                         <div className="text-center space-y-3">
@@ -866,7 +863,7 @@ function PlanWorkoutContent() {
                           <div className="flex items-center justify-center gap-4 pt-2">
                             <Link
                               href="/history"
-                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-charcoal border border-warm-sand/40 hover:border-charcoal transition-colors"
+                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-charcoal border border-driftwood/30 hover:border-charcoal transition-colors"
                             >
                               <History className="w-4 h-4" /> View History
                             </Link>
@@ -901,12 +898,12 @@ function PlanWorkoutContent() {
                             }
                             className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs font-semibold transition-all duration-300 flex-shrink-0 ${
                               saving
-                                ? "bg-warm-sand/30 text-warm-sand cursor-wait"
+                                ? "bg-warm-sand/30 text-driftwood cursor-wait"
                                 : completedCount === 0 &&
                                     exerciseLogs.every(
                                       (l) => l.repsCompleted === 0,
                                     )
-                                  ? "bg-warm-sand/20 text-warm-sand/50 cursor-not-allowed"
+                                  ? "bg-warm-sand/20 text-driftwood/50 cursor-not-allowed"
                                   : "bg-terracotta text-parchment hover:bg-charcoal shadow-lg"
                             }`}
                           >
@@ -936,10 +933,9 @@ function PlanWorkoutContent() {
             </div>
           </section>
 
-          {/* Footer */}
-          <SiteFooter />
+          
         </>
       )}
-    </div>
+    </PageShell>
   );
 }

@@ -38,11 +38,11 @@ export const SidebarMetrics = ({
   }, []);
 
   return (
-    <div className="w-full md:w-80 h-full bg-charcoal/90 text-parchment rounded-2xl md:rounded-3xl p-5 sm:p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto border border-driftwood/20">
+    <div className="w-full md:w-80 h-full bg-charcoal/90 text-parchment rounded-[20px] md:rounded-3xl p-5 sm:p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto border border-driftwood/20">
       {/* Top Section */}
       <div className="space-y-5 sm:space-y-6 md:space-y-8">
         <div>
-          <h2 className="text-sm font-semibold tracking-widest text-sage uppercase mb-3">
+          <h2 className="text-sm font-semibold text-sage mb-3">
             Exercise
           </h2>
           {planMode ? (
@@ -86,10 +86,10 @@ export const SidebarMetrics = ({
 
         {/* Rep Counter */}
         <div className="pt-6 border-t border-driftwood/20">
-          <h2 className="text-sm font-semibold tracking-widest text-sage uppercase mb-1">
+          <h2 className="text-sm font-semibold text-sage mb-1">
             Repetitions
           </h2>
-          <div className="text-5xl sm:text-6xl md:text-7xl font-light tracking-tighter text-parchment">
+          <div className="text-5xl sm:text-6xl md:text-7xl tracking-tighter text-parchment">
             {reps}
             <span className="text-2xl text-warm-sand/50 tracking-normal">
               /{targetReps}
@@ -100,14 +100,14 @@ export const SidebarMetrics = ({
         {/* Muscle Tags */}
         {currentExercise && (
           <div className="pt-4 border-t border-driftwood/20">
-            <h2 className="text-xs font-semibold tracking-widest text-sage uppercase mb-2">
+            <h2 className="text-xs font-semibold text-sage mb-2">
               Target Muscles
             </h2>
             <div className="flex flex-wrap gap-1.5">
               {currentExercise.muscles.map((m) => (
                 <span
                   key={m}
-                  className="px-2.5 py-1 rounded-full bg-parchment/8 text-[10px] tracking-widest uppercase text-warm-sand/70 border border-driftwood/15"
+                  className="px-2.5 py-1 rounded-full bg-parchment/8 text-xs text-warm-sand/70 border border-driftwood/15"
                 >
                   {m}
                 </span>
@@ -118,8 +118,8 @@ export const SidebarMetrics = ({
       </div>
 
       {/* Bottom Section - Feedback */}
-      <div className="bg-parchment/8 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 shadow-sm border border-driftwood/20 mt-4 sm:mt-6">
-        <h3 className="text-xs font-semibold tracking-widest text-sage uppercase mb-3">
+      <div className="bg-parchment/8 rounded-xl sm:rounded-[20px] p-4 sm:p-5 md:p-6 shadow-sm border border-driftwood/20 mt-4 sm:mt-6">
+        <h3 className="text-xs font-semibold text-sage mb-3">
           Live Form Feedback
         </h3>
         <div className="flex items-start gap-4">

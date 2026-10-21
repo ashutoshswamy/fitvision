@@ -3,22 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowRight,
-  History,
-  Calendar,
-  Clock,
-  Dumbbell,
-  Target,
-  ChevronDown,
-  ChevronUp,
-  Activity,
-  Flame,
-  Trash2,
-} from "lucide-react";
+import { ArrowRight, ChevronDown, Trash2 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import { AppNav } from "../components/AppNav";
-import { SiteFooter } from "../components/SiteFooter";
+import { PageShell, PageHeader, Spinner, btnPrimary } from "../components/ui";
 import { useRouter } from "next/navigation";
 
 interface WorkoutExercise {
@@ -59,23 +46,12 @@ function formatDuration(seconds: number): string {
   return `${hrs}h ${remainMins}m`;
 }
 
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
+const monthOf = (d: string) => new Date(d).toLocaleDateString("en-US", { month: "short" });
+const dayOf = (d: string) => new Date(d).getDate();
+const longDate = (d: string) =>
+  new Date(d).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+const timeOf = (d: string) =>
+  new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
 
 export default function HistoryPage() {
   const { isSignedIn, isLoaded } = useUser();
@@ -141,298 +117,150 @@ export default function HistoryPage() {
     fetchData();
   }, [isSignedIn]);
 
-  if (!isLoaded || !isSignedIn) {
-    return (
-      <div className="min-h-[100dvh] bg-parchment flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-sage border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (!isLoaded || !isSignedIn) return <Spinner />;
 
   return (
-    <div className="min-h-[100dvh] bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
-      {/* Navigation */}
-      <AppNav />
+    <PageShell>
+      <PageHeader title="Workout" accent="history." intro="Every session you have saved, newest first." />
 
-      {/* Header */}
-      <section className="pt-28 sm:pt-36 pb-6 sm:pb-10 px-4 sm:px-6">
-        <div className="max-w-[75rem] mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 text-xs text-sage font-semibold mb-4">
-              <span className="w-8 h-px bg-sage"></span>
-              <span>Training Log</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl tracking-tighter text-charcoal leading-[1] mb-3 sm:mb-4">
-              Workout{" "}
-              <span className="text-terracotta">
-                history.
-              </span>
-            </h1>
-            <p className="text-base sm:text-lg text-driftwood max-w-lg leading-relaxed">
-              Every rep tracked, every session remembered.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Stats Summary */}
       {stats && stats.totalSessions > 0 && (
-        <section className="pb-8 sm:pb-12 px-4 sm:px-6">
-          <div className="max-w-[75rem] mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"
-            >
-              {[
-                {
-                  icon: <Activity className="w-4 h-4" />,
-                  label: "Sessions",
-                  value: stats.totalSessions,
-                },
-                {
-                  icon: <Dumbbell className="w-4 h-4" />,
-                  label: "Exercises",
-                  value: stats.totalExercises,
-                },
-                {
-                  icon: <Flame className="w-4 h-4" />,
-                  label: "Total Reps",
-                  value: stats.totalReps,
-                },
-                {
-                  icon: <Target className="w-4 h-4" />,
-                  label: "Avg Precision",
-                  value: `${stats.avgPrecision}%`,
-                },
-              ].map((stat, i) => (
-                <div
-                  key={i}
-                  className="bg-linen rounded-2xl p-4 sm:p-5 border border-warm-sand/40"
-                >
-                  <div className="flex items-center gap-2 text-sage mb-2">
-                    {stat.icon}
-                    <span className="text-xs font-semibold">
-                      {stat.label}
-                    </span>
-                  </div>
-                  <p className="text-2xl sm:text-3xl tracking-tighter text-charcoal">
-                    {stat.value}
-                  </p>
-                </div>
-              ))}
-            </motion.div>
-          </div>
+        <section className="mx-auto max-w-[84rem] px-5 pb-12 sm:px-8">
+          <dl className="grid grid-cols-2 gap-y-8 border-t border-warm-sand/50 pt-8 md:grid-cols-4">
+            {[
+              ["Sessions", stats.totalSessions],
+              ["Exercises", stats.totalExercises],
+              ["Total reps", stats.totalReps],
+              ["Average precision", `${stats.avgPrecision}%`],
+            ].map(([k, v]) => (
+              <div key={k as string}>
+                <dd className="font-display text-4xl font-semibold tabular-nums tracking-tighter sm:text-5xl">{v}</dd>
+                <dt className="mt-1 text-sm text-driftwood">{k}</dt>
+              </div>
+            ))}
+          </dl>
         </section>
       )}
 
-      {/* Sessions List */}
-      <section className="pb-20 sm:pb-32 px-4 sm:px-6">
-        <div className="max-w-[75rem] mx-auto">
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 border-4 border-sage border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : sessions.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-center py-16 sm:py-24"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-linen flex items-center justify-center mx-auto mb-6">
-                <History className="w-8 h-8 text-warm-sand" />
-              </div>
-              <h3 className="text-xl sm:text-2xl tracking-tight text-charcoal mb-3">
-                No workouts yet
-              </h3>
-              <p className="text-driftwood mb-8 max-w-sm mx-auto">
-                Complete a workout in the Studio and it will appear here with
-                all your stats.
-              </p>
-              <Link
-                href="/tracker"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-terracotta text-parchment rounded-full text-sm font-medium tracking-wide hover:bg-charcoal transition-colors shadow-lg"
-              >
-                Start a Workout <ArrowRight className="w-4 h-4" />
-              </Link>
-            </motion.div>
-          ) : (
-            <div className="space-y-4">
-              {sessions.map((session, i) => {
-                const isExpanded = expandedSession === session.id;
-                const totalReps = session.workout_exercises.reduce(
-                  (sum, ex) => sum + ex.reps_completed,
-                  0,
-                );
-                const exerciseTypes = [
-                  ...new Set(
-                    session.workout_exercises.map((ex) => ex.exercise_type),
-                  ),
-                ];
+      <section className="mx-auto max-w-[84rem] px-5 pb-24 sm:px-8">
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-sage border-t-transparent" />
+          </div>
+        ) : sessions.length === 0 ? (
+          <div className="rounded-[20px] bg-linen p-8 sm:p-12">
+            <h2 className="font-display text-2xl font-semibold tracking-tight">No workouts yet</h2>
+            <p className="mt-2 max-w-md leading-relaxed text-driftwood">
+              Finish a set with the camera and save it. Your sessions and stats will show up here.
+            </p>
+            <Link href="/tracker" className={`${btnPrimary} mt-6`}>
+              Start a workout
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {sessions.map((session, i) => {
+              const isExpanded = expandedSession === session.id;
+              const totalReps = session.workout_exercises.reduce((sum, ex) => sum + ex.reps_completed, 0);
+              const exerciseTypes = [...new Set(session.workout_exercises.map((ex) => ex.exercise_type))];
 
-                return (
-                  <motion.div
-                    key={session.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05, duration: 0.4 }}
-                  >
+              return (
+                <motion.li
+                  key={session.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.4 }}
+                  className="rounded-[20px] bg-linen"
+                >
+                  <div className="flex items-stretch gap-2 pr-3">
                     <button
-                      onClick={() =>
-                        setExpandedSession(isExpanded ? null : session.id)
-                      }
-                      className="w-full text-left bg-linen rounded-2xl p-5 sm:p-6 border border-warm-sand/40 hover:shadow-md transition-all duration-300"
+                      onClick={() => setExpandedSession(isExpanded ? null : session.id)}
+                      aria-expanded={isExpanded}
+                      aria-label={`${longDate(session.started_at)}, ${totalReps} reps`}
+                      className="flex min-w-0 flex-1 items-center gap-5 rounded-[20px] p-5 text-left sm:gap-6 sm:p-6"
                     >
-                      <div className="flex items-start sm:items-center justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                            <span className="text-sm sm:text-base font-medium text-charcoal">
-                              {formatDate(session.started_at)}
-                            </span>
-                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-parchment text-driftwood border border-warm-sand/40">
-                              {session.source === "ai_plan"
-                                ? "AI Plan"
-                                : "Manual"}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-driftwood">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {formatTime(session.started_at)}
-                            </span>
-                            {session.duration_sec && (
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
-                                {formatDuration(session.duration_sec)}
-                              </span>
-                            )}
-                            <span className="flex items-center gap-1">
-                              <Dumbbell className="w-3 h-3" />
-                              {session.workout_exercises.length} exercise
-                              {session.workout_exercises.length !== 1
-                                ? "s"
-                                : ""}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Flame className="w-3 h-3" />
-                              {totalReps} reps
-                            </span>
-                          </div>
-                          {exerciseTypes.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-3">
-                              {exerciseTypes.map((type) => (
-                                <span
-                                  key={type}
-                                  className="px-2.5 py-0.5 rounded-full bg-parchment text-xs text-driftwood border border-warm-sand/30"
-                                >
-                                  {type}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-shrink-0 flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(session.id);
-                            }}
-                            disabled={deletingId === session.id}
-                            className="p-1.5 rounded-lg text-warm-sand hover:text-terracotta hover:bg-terracotta/10 transition-colors duration-200 disabled:opacity-50"
-                            aria-label="Delete workout"
-                          >
-                            {deletingId === session.id ? (
-                              <div className="w-4 h-4 border-2 border-terracotta border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4" />
-                            )}
-                          </button>
-                          <span className="text-warm-sand">
-                            {isExpanded ? (
-                              <ChevronUp className="w-5 h-5" />
-                            ) : (
-                              <ChevronDown className="w-5 h-5" />
-                            )}
+                      <span className="flex w-14 shrink-0 flex-col items-center rounded-2xl bg-parchment py-2">
+                        <span className="text-xs font-semibold text-terracotta">{monthOf(session.started_at)}</span>
+                        <span className="font-display text-2xl font-semibold leading-none tabular-nums">
+                          {dayOf(session.started_at)}
+                        </span>
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex flex-wrap items-center gap-2">
+                          <span className="font-display text-lg font-semibold tracking-tight">
+                            {totalReps} reps across {session.workout_exercises.length} exercise
+                            {session.workout_exercises.length !== 1 ? "s" : ""}
                           </span>
-                        </div>
-                      </div>
-
-                      {/* Expanded exercises detail */}
-                      <AnimatePresence>
-                        {isExpanded && session.workout_exercises.length > 0 && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="mt-5 pt-5 border-t border-warm-sand/40 space-y-3">
-                              {session.workout_exercises.map((ex) => (
-                                <div
-                                  key={ex.id}
-                                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-parchment rounded-xl p-4 border border-warm-sand/30"
-                                >
-                                  <div>
-                                    <h4 className="text-sm font-medium text-charcoal">
-                                      {ex.exercise_type}
-                                    </h4>
-                                    <p className="text-xs text-driftwood mt-0.5">
-                                      {ex.sets_completed} set
-                                      {ex.sets_completed !== 1
-                                        ? "s"
-                                        : ""} × {ex.reps_completed} reps
-                                      {ex.target_reps
-                                        ? ` / ${ex.target_reps} target`
-                                        : ""}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center gap-4">
-                                    {ex.precision_avg != null && (
-                                      <div className="flex items-center gap-1.5">
-                                        <Target className="w-3 h-3 text-sage" />
-                                        <span className="text-xs font-medium text-charcoal">
-                                          {ex.precision_avg}%
-                                        </span>
-                                      </div>
-                                    )}
-                                    {ex.duration_sec != null && (
-                                      <div className="flex items-center gap-1.5">
-                                        <Clock className="w-3 h-3 text-driftwood" />
-                                        <span className="text-xs text-driftwood">
-                                          {formatDuration(ex.duration_sec)}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                              {session.notes && (
-                                <p className="text-xs text-driftwood italic pl-1 pt-1">
-                                  Note: {session.notes}
-                                </p>
-                              )}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                          <span className="rounded-full bg-parchment px-3 py-0.5 text-xs font-semibold">
+                            {session.source === "ai_plan" ? "AI plan" : "Manual"}
+                          </span>
+                        </span>
+                        <span className="mt-1 block text-sm text-driftwood">
+                          {timeOf(session.started_at)}
+                          {session.duration_sec ? `, ${formatDuration(session.duration_sec)}` : ""}
+                          {exerciseTypes.length > 0 ? `, ${exerciseTypes.join(", ")}` : ""}
+                        </span>
+                      </span>
+                      <ChevronDown
+                        className={`h-5 w-5 shrink-0 text-driftwood transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+                      />
                     </button>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
+                    <button
+                      onClick={() => handleDelete(session.id)}
+                      disabled={deletingId === session.id}
+                      className="my-auto rounded-full p-3 text-driftwood transition-colors duration-300 hover:bg-terracotta/10 hover:text-terracotta disabled:opacity-50"
+                      aria-label="Delete workout"
+                    >
+                      {deletingId === session.id ? (
+                        <span className="block h-4 w-4 animate-spin rounded-full border-2 border-terracotta border-t-transparent" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
 
-      {/* Footer */}
-      <SiteFooter />
-    </div>
+                  <AnimatePresence>
+                    {isExpanded && session.workout_exercises.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <ul className="flex flex-col gap-2 px-5 pb-5 sm:px-6 sm:pb-6">
+                          {session.workout_exercises.map((ex) => (
+                            <li
+                              key={ex.id}
+                              className="flex flex-col justify-between gap-2 rounded-2xl bg-parchment p-4 sm:flex-row sm:items-center"
+                            >
+                              <div>
+                                <h3 className="font-semibold">{ex.exercise_type}</h3>
+                                <p className="text-sm text-driftwood">
+                                  {ex.sets_completed} set{ex.sets_completed !== 1 ? "s" : ""}, {ex.reps_completed} reps
+                                  {ex.target_reps ? ` of ${ex.target_reps} target` : ""}
+                                </p>
+                              </div>
+                              <p className="text-sm text-driftwood">
+                                {ex.precision_avg != null && (
+                                  <span className="font-semibold text-charcoal">{ex.precision_avg}% precision</span>
+                                )}
+                                {ex.precision_avg != null && ex.duration_sec != null && ", "}
+                                {ex.duration_sec != null && formatDuration(ex.duration_sec)}
+                              </p>
+                            </li>
+                          ))}
+                          {session.notes && <li className="px-1 pt-1 text-sm text-driftwood">Note: {session.notes}</li>}
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+    </PageShell>
   );
 }

@@ -107,10 +107,10 @@ export function HUD({
           <div
             className={`w-2 h-2 rounded-full ${phase === "idle" ? "bg-warm-sand/50" : "bg-sage animate-pulse"}`}
           />
-          <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white tracking-wide">
+          <span className="font-display font-semibold text-3xl sm:text-4xl lg:text-5xl text-white tracking-wide">
             {exercise.type}
           </span>
-          <span className="text-[10px] text-warm-sand/70 tracking-widest uppercase self-end mb-1.5 ml-2">
+          <span className="text-xs text-warm-sand/70 self-end mb-1.5 ml-2">
             {phase === "idle" ? "READY" : phase}
           </span>
         </div>
@@ -122,12 +122,12 @@ export function HUD({
           <div className="text-center min-w-[60px]">
             <div
               key={pulseKey}
-              className="font-serif text-5xl sm:text-6xl font-semibold text-white animate-pulse"
+              className="font-display font-semibold text-5xl sm:text-6xl font-semibold text-white animate-pulse"
               style={{ lineHeight: 1 }}
             >
               {repCount}
             </div>
-            <div className="text-[9px] text-warm-sand/60 font-medium uppercase tracking-[0.2em] mt-2">
+            <div className="text-xs text-warm-sand/60 font-medium mt-2">
               reps
             </div>
           </div>
