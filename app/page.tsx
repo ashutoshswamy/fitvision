@@ -232,7 +232,7 @@ export default function Home() {
               transition={{ duration: 0.8, ease }}
             >
               Your webcam, now a{" "}
-              <span className="text-terracotta">form coach.</span>
+              <span className="text-terracotta">personal trainer.</span>
             </motion.h1>
             <motion.p
               className="mt-6 max-w-md text-lg leading-relaxed text-charcoal/80"
