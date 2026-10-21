@@ -3,13 +3,10 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   ArrowLeft,
-  Menu,
-  X,
   Save,
   Check,
   Loader2,
@@ -26,7 +23,9 @@ import {
   History,
   SkipForward,
 } from "lucide-react";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import { AppNav } from "../components/AppNav";
+import { SiteFooter } from "../components/SiteFooter";
 import { ExerciseType, EXERCISES } from "../lib/exercises";
 
 interface Exercise {
@@ -237,7 +236,7 @@ export default function PlanWorkoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-parchment flex items-center justify-center">
+        <div className="min-h-[100dvh] bg-parchment flex items-center justify-center">
           <div className="w-6 h-6 border-2 border-terracotta border-t-transparent rounded-full animate-spin" />
         </div>
       }
@@ -257,7 +256,6 @@ function PlanWorkoutContent() {
   const [plan, setPlan] = useState<SavedPlan | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Workout state
   const [workoutStarted, setWorkoutStarted] = useState(false);
@@ -440,141 +438,39 @@ function PlanWorkoutContent() {
 
   if (!isLoaded || !isSignedIn) {
     return (
-      <div className="min-h-screen bg-parchment flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-parchment flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-sage border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
+    <div className="min-h-[100dvh] bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
       {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-0 w-full z-50 px-4 sm:px-8 py-4 sm:py-6 backdrop-blur-md bg-parchment/80 border-b border-warm-sand/50"
-      >
-        <div className="max-w-[90rem] mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-nobg.png"
-              alt="FitVision"
-              width={120}
-              height={32}
-              className="h-7 sm:h-8 w-auto"
-            />
-            <span className="font-serif text-lg sm:text-xl font-light tracking-wide">
-              FitVision
-            </span>
-          </Link>
-          <div className="hidden md:flex items-center gap-6 lg:gap-10 text-xs tracking-[0.2em] uppercase font-medium">
-            <Link
-              href="/dashboard"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/#philosophy"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Philosophy
-            </Link>
-            <Link
-              href="/#process"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Method
-            </Link>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8",
-                },
-              }}
-            />
-          </div>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-charcoal"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
-        </div>
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
-            >
-              <div className="flex flex-col gap-4 pt-6 pb-4 text-xs tracking-[0.2em] uppercase font-medium">
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/#philosophy"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Philosophy
-                </Link>
-                <Link
-                  href="/#process"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Method
-                </Link>
-                <div className="pt-2 border-t border-warm-sand/30">
-                  <UserButton
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-8 h-8",
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
+      <AppNav />
 
       {/* Loading / No Plan states */}
       {loadingPlan ? (
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-[100dvh] flex items-center justify-center">
           <Loader2 className="w-8 h-8 text-sage animate-spin" />
         </div>
       ) : !plan ? (
-        <div className="min-h-screen flex flex-col items-center justify-center gap-6 px-4">
+        <div className="min-h-[100dvh] flex flex-col items-center justify-center gap-6 px-4">
           <div className="w-16 h-16 rounded-2xl bg-warm-sand/20 flex items-center justify-center">
             <Calendar className="w-8 h-8 text-driftwood" />
           </div>
           <div className="text-center">
-            <h2 className="text-2xl font-light tracking-tight text-charcoal mb-2">
+            <h2 className="text-2xl tracking-tight text-charcoal mb-2">
               No Active Plan
             </h2>
-            <p className="text-driftwood text-sm font-light max-w-md">
+            <p className="text-driftwood text-sm max-w-md">
               You need an active AI plan to start a plan workout. Generate a
               plan and set it as active first.
             </p>
           </div>
           <Link
             href="/suggestions"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-terracotta text-parchment rounded-full text-xs tracking-[0.15em] uppercase font-semibold hover:bg-charcoal transition-colors duration-300"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-terracotta text-parchment rounded-full text-xs font-semibold hover:bg-charcoal transition-colors duration-300"
           >
             Get AI Plan <ArrowRight className="w-4 h-4" />
           </Link>
@@ -591,18 +487,18 @@ function PlanWorkoutContent() {
               >
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-driftwood hover:text-charcoal transition-colors duration-300 font-medium mb-6"
+                  className="inline-flex items-center gap-2 text-xs text-driftwood hover:text-charcoal transition-colors duration-300 font-medium mb-6"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                 </Link>
-                <div className="flex items-center gap-4 text-[10px] text-terracotta tracking-[0.3em] font-semibold uppercase mb-4">
+                <div className="flex items-center gap-4 text-xs text-terracotta font-semibold mb-4">
                   <span className="w-8 h-px bg-terracotta" />
                   <Star className="w-3.5 h-3.5 fill-terracotta" />
                   <span>{plan.name}</span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tighter text-charcoal leading-[1] mb-3">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl tracking-tighter text-charcoal leading-[1] mb-3">
                   Plan{" "}
-                  <span className="font-medium text-muted-clay italic">
+                  <span className="text-terracotta">
                     Workout
                   </span>
                 </h1>
@@ -626,7 +522,7 @@ function PlanWorkoutContent() {
                       if (!workoutStarted) setSelectedDayIndex(i);
                     }}
                     disabled={workoutStarted}
-                    className={`flex-shrink-0 px-5 py-3 rounded-xl text-xs tracking-[0.12em] uppercase font-semibold border transition-all duration-300 ${
+                    className={`flex-shrink-0 px-5 py-3 rounded-xl text-xs font-semibold border transition-all duration-300 ${
                       selectedDayIndex === i
                         ? "bg-charcoal text-parchment border-charcoal"
                         : workoutStarted
@@ -634,7 +530,7 @@ function PlanWorkoutContent() {
                           : "bg-parchment text-driftwood border-warm-sand/40 hover:border-charcoal/30"
                     }`}
                   >
-                    <span className="block text-[9px] opacity-60 mb-0.5">
+                    <span className="block text-xs opacity-60 mb-0.5">
                       {day.day}
                     </span>
                     {day.focus}
@@ -659,14 +555,14 @@ function PlanWorkoutContent() {
                     <div>
                       <div className="flex items-center gap-3 mb-1.5">
                         <Dumbbell className="w-5 h-5 text-muted-clay" />
-                        <h2 className="text-xl sm:text-2xl font-light tracking-tight text-charcoal">
+                        <h2 className="text-xl sm:text-2xl tracking-tight text-charcoal">
                           {todayPlan.day} &mdash;{" "}
-                          <span className="font-medium text-muted-clay italic">
+                          <span className="text-terracotta">
                             {todayPlan.focus}
                           </span>
                         </h2>
                       </div>
-                      <p className="text-driftwood text-xs tracking-[0.15em] uppercase font-light">
+                      <p className="text-driftwood text-xs">
                         {todayPlan.exercises.length} exercises &middot; Rest:{" "}
                         {todayPlan.restPeriod}
                       </p>
@@ -674,13 +570,13 @@ function PlanWorkoutContent() {
                     {!workoutStarted ? (
                       <button
                         onClick={startWorkout}
-                        className="inline-flex items-center gap-2 px-6 py-3.5 bg-terracotta text-parchment rounded-full text-xs tracking-[0.15em] uppercase font-semibold hover:bg-charcoal transition-colors duration-300 shadow-lg flex-shrink-0"
+                        className="inline-flex items-center gap-2 px-6 py-3.5 bg-terracotta text-parchment rounded-full text-xs font-semibold hover:bg-charcoal transition-colors duration-300 shadow-lg flex-shrink-0"
                       >
                         <Play className="w-4 h-4" /> Start Workout
                       </button>
                     ) : (
                       <div className="flex items-center gap-3 flex-shrink-0">
-                        <div className="text-xs text-sage tracking-[0.12em] uppercase font-semibold">
+                        <div className="text-xs text-sage font-semibold">
                           {completedCount}/{totalExercises} done
                         </div>
                         <div className="w-24 h-2 bg-warm-sand/30 rounded-full overflow-hidden">
@@ -741,7 +637,7 @@ function PlanWorkoutContent() {
                                 <CheckCircle2 className="w-6 h-6 text-sage flex-shrink-0" />
                               ) : (
                                 <span
-                                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ${
+                                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 ${
                                     isActive
                                       ? "bg-terracotta text-parchment"
                                       : "bg-warm-sand/30 text-driftwood"
@@ -761,19 +657,19 @@ function PlanWorkoutContent() {
                                   {exercise.name}
                                 </p>
                                 <div className="flex items-center gap-3 mt-1 flex-wrap">
-                                  <span className="text-[10px] tracking-widest uppercase text-driftwood font-mono">
+                                  <span className="text-xs text-driftwood font-mono">
                                     {exercise.sets} sets
                                   </span>
-                                  <span className="text-[10px] tracking-widest uppercase text-driftwood font-mono">
+                                  <span className="text-xs text-driftwood font-mono">
                                     {exercise.reps} reps
                                   </span>
                                   {exercise.duration && (
-                                    <span className="text-[10px] tracking-widest uppercase text-driftwood font-mono">
+                                    <span className="text-xs text-driftwood font-mono">
                                       {exercise.duration}
                                     </span>
                                   )}
                                   {canTrack && (
-                                    <span className="text-[10px] tracking-[0.1em] uppercase text-sage font-semibold flex items-center gap-1">
+                                    <span className="text-xs text-sage font-semibold flex items-center gap-1">
                                       <Camera className="w-3 h-3" /> Trackable
                                     </span>
                                   )}
@@ -800,7 +696,7 @@ function PlanWorkoutContent() {
                               >
                                 <div className="px-5 sm:px-6 pb-6 space-y-4 border-t border-warm-sand/20 pt-4">
                                   {exercise.notes && (
-                                    <p className="text-driftwood text-xs font-light italic">
+                                    <p className="text-driftwood text-xs italic">
                                       {exercise.notes}
                                     </p>
                                   )}
@@ -809,7 +705,7 @@ function PlanWorkoutContent() {
                                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                     {/* Sets */}
                                     <div className="bg-parchment rounded-xl p-4 border border-warm-sand/20">
-                                      <label className="block text-[10px] tracking-[0.15em] uppercase text-driftwood font-semibold mb-2">
+                                      <label className="block text-xs text-driftwood font-semibold mb-2">
                                         Sets Done
                                       </label>
                                       <div className="flex items-center gap-2">
@@ -829,7 +725,7 @@ function PlanWorkoutContent() {
                                         >
                                           <Minus className="w-3 h-3" />
                                         </button>
-                                        <span className="text-xl font-light text-charcoal w-8 text-center">
+                                        <span className="text-xl text-charcoal w-8 text-center">
                                           {log?.setsCompleted ?? 0}
                                         </span>
                                         <button
@@ -850,7 +746,7 @@ function PlanWorkoutContent() {
 
                                     {/* Reps */}
                                     <div className="bg-parchment rounded-xl p-4 border border-warm-sand/20">
-                                      <label className="block text-[10px] tracking-[0.15em] uppercase text-driftwood font-semibold mb-2">
+                                      <label className="block text-xs text-driftwood font-semibold mb-2">
                                         Rep Count
                                       </label>
                                       <div className="flex items-center gap-2">
@@ -870,7 +766,7 @@ function PlanWorkoutContent() {
                                         >
                                           <Minus className="w-3 h-3" />
                                         </button>
-                                        <span className="text-xl font-light text-charcoal w-8 text-center">
+                                        <span className="text-xl text-charcoal w-8 text-center">
                                           {log?.repsCompleted ?? 0}
                                         </span>
                                         <button
@@ -892,10 +788,10 @@ function PlanWorkoutContent() {
                                     {/* Precision (if tracked) */}
                                     {log?.isTracked && (
                                       <div className="bg-parchment rounded-xl p-4 border border-warm-sand/20">
-                                        <label className="block text-[10px] tracking-[0.15em] uppercase text-driftwood font-semibold mb-2">
+                                        <label className="block text-xs text-driftwood font-semibold mb-2">
                                           Precision
                                         </label>
-                                        <p className="text-xl font-light text-sage">
+                                        <p className="text-xl text-sage">
                                           {Math.round(log.precisionAvg)}%
                                         </p>
                                       </div>
@@ -908,7 +804,7 @@ function PlanWorkoutContent() {
                                       <Link
                                         href={`/tracker?exercise=${encodeURIComponent(matchedType!)}&plan_id=${plan!.id}`}
                                         onClick={(e) => e.stopPropagation()}
-                                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-charcoal text-parchment text-[10px] tracking-[0.12em] uppercase font-semibold hover:bg-charcoal/85 transition-colors"
+                                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-charcoal text-parchment text-xs font-semibold hover:bg-charcoal/85 transition-colors"
                                       >
                                         <Camera className="w-4 h-4" /> Open in
                                         Studio
@@ -919,7 +815,7 @@ function PlanWorkoutContent() {
                                         e.stopPropagation();
                                         markComplete(idx);
                                       }}
-                                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sage text-parchment text-[10px] tracking-[0.12em] uppercase font-semibold hover:bg-sage/80 transition-colors"
+                                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sage text-parchment text-xs font-semibold hover:bg-sage/80 transition-colors"
                                     >
                                       <Check className="w-4 h-4" /> Mark Done
                                     </button>
@@ -929,7 +825,7 @@ function PlanWorkoutContent() {
                                           e.stopPropagation();
                                           setActiveExerciseIdx(idx + 1);
                                         }}
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] tracking-[0.12em] uppercase font-medium text-driftwood border border-warm-sand/40 hover:border-driftwood transition-colors"
+                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium text-driftwood border border-warm-sand/40 hover:border-driftwood transition-colors"
                                       >
                                         <SkipForward className="w-3.5 h-3.5" />{" "}
                                         Skip
@@ -958,25 +854,25 @@ function PlanWorkoutContent() {
                           <div className="w-14 h-14 rounded-full bg-sage/10 flex items-center justify-center mx-auto">
                             <CheckCircle2 className="w-7 h-7 text-sage" />
                           </div>
-                          <h3 className="text-xl font-light tracking-tight text-charcoal">
+                          <h3 className="text-xl tracking-tight text-charcoal">
                             Workout{" "}
                             <span className="font-medium text-sage italic">
                               saved!
                             </span>
                           </h3>
-                          <p className="text-driftwood text-sm font-light">
+                          <p className="text-driftwood text-sm">
                             {completedCount} exercises logged from your plan.
                           </p>
                           <div className="flex items-center justify-center gap-4 pt-2">
                             <Link
                               href="/history"
-                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs tracking-[0.12em] uppercase font-semibold text-charcoal border border-warm-sand/40 hover:border-charcoal transition-colors"
+                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-charcoal border border-warm-sand/40 hover:border-charcoal transition-colors"
                             >
                               <History className="w-4 h-4" /> View History
                             </Link>
                             <Link
                               href="/dashboard"
-                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs tracking-[0.12em] uppercase font-semibold text-parchment bg-charcoal hover:bg-charcoal/85 transition-colors"
+                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-parchment bg-charcoal hover:bg-charcoal/85 transition-colors"
                             >
                               Dashboard <ArrowRight className="w-4 h-4" />
                             </Link>
@@ -988,7 +884,7 @@ function PlanWorkoutContent() {
                             <h3 className="text-lg font-medium text-charcoal tracking-wide mb-1">
                               Finish Workout
                             </h3>
-                            <p className="text-driftwood text-xs font-light">
+                            <p className="text-driftwood text-xs">
                               {completedCount > 0
                                 ? `${completedCount} of ${totalExercises} exercises completed. Save your session to track progress.`
                                 : "Complete at least one exercise to save your workout."}
@@ -1003,7 +899,7 @@ function PlanWorkoutContent() {
                                   (l) => l.repsCompleted === 0,
                                 ))
                             }
-                            className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs tracking-[0.15em] uppercase font-semibold transition-all duration-300 flex-shrink-0 ${
+                            className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs font-semibold transition-all duration-300 flex-shrink-0 ${
                               saving
                                 ? "bg-warm-sand/30 text-warm-sand cursor-wait"
                                 : completedCount === 0 &&
@@ -1032,7 +928,7 @@ function PlanWorkoutContent() {
                 </motion.div>
               ) : (
                 <div className="text-center py-16">
-                  <p className="text-driftwood text-sm font-light">
+                  <p className="text-driftwood text-sm">
                     No exercises found for this day.
                   </p>
                 </div>
@@ -1041,32 +937,7 @@ function PlanWorkoutContent() {
           </section>
 
           {/* Footer */}
-          <footer className="bg-parchment py-10 sm:py-16 px-4 sm:px-8 border-t border-warm-sand/50">
-            <div className="max-w-[75rem] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
-              <Link href="/" className="flex items-center gap-2">
-                <Image
-                  src="/logo-nobg.png"
-                  alt="FitVision"
-                  width={120}
-                  height={32}
-                  className="h-7 sm:h-8 w-auto"
-                />
-                <span className="font-serif text-lg sm:text-xl font-light tracking-wide">
-                  FitVision
-                </span>
-              </Link>
-              <p className="text-[10px] font-medium text-driftwood tracking-[0.2em] uppercase text-center">
-                © {new Date().getFullYear()} FitVision. Cultivating mindful
-                movement.
-              </p>
-              <Link
-                href="/disclaimer"
-                className="text-[10px] tracking-[0.2em] uppercase text-sage hover:text-terracotta transition-colors duration-300"
-              >
-                Disclaimer
-              </Link>
-            </div>
-          </footer>
+          <SiteFooter />
         </>
       )}
     </div>

@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
-  LogIn,
   Loader2,
   Dumbbell,
   AlertTriangle,
@@ -16,15 +14,15 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
-  Menu,
-  X,
   Save,
   Check,
   Trash2,
   Star,
   BookOpen,
 } from "lucide-react";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import { AppNav } from "../components/AppNav";
+import { SiteFooter } from "../components/SiteFooter";
 
 interface Exercise {
   name: string;
@@ -81,7 +79,6 @@ export default function SuggestionsPage() {
   const [results, setResults] = useState<SuggestionsResponse | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(0);
   const [step, setStep] = useState<"form" | "results">("form");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [savingPlan, setSavingPlan] = useState(false);
   const [planSaved, setPlanSaved] = useState(false);
   const [planName, setPlanName] = useState("");
@@ -224,131 +221,9 @@ export default function SuggestionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
+    <div className="min-h-[100dvh] bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
       {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-0 w-full z-50 px-4 sm:px-8 py-4 sm:py-6 backdrop-blur-md bg-parchment/80 border-b border-warm-sand/50"
-      >
-        <div className="max-w-[90rem] mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-nobg.png"
-              alt="FitVision"
-              width={120}
-              height={32}
-              className="h-7 sm:h-8 w-auto"
-            />
-            <span className="font-serif text-lg sm:text-xl font-light tracking-wide">
-              FitVision
-            </span>
-          </Link>
-          <div className="hidden md:flex items-center gap-6 lg:gap-10 text-xs tracking-[0.2em] uppercase font-medium">
-            <Link
-              href={isSignedIn ? "/dashboard" : "/sign-in"}
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/#philosophy"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Philosophy
-            </Link>
-            <Link
-              href="/#process"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Method
-            </Link>
-            {isSignedIn ? (
-              <UserButton
-                appearance={{
-                  elements: {
-                    avatarBox: "w-8 h-8",
-                  },
-                }}
-              />
-            ) : (
-              <Link
-                href="/sign-in"
-                className="flex items-center gap-2 text-parchment bg-charcoal px-4 py-2 rounded-full hover:bg-charcoal/85 transition-colors duration-300"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                Sign In
-              </Link>
-            )}
-          </div>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-charcoal"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
-        </div>
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
-            >
-              <div className="flex flex-col gap-4 pt-6 pb-4 text-xs tracking-[0.2em] uppercase font-medium">
-                <Link
-                  href={isSignedIn ? "/dashboard" : "/sign-in"}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/#philosophy"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Philosophy
-                </Link>
-                <Link
-                  href="/#process"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Method
-                </Link>
-                <div className="pt-2 border-t border-warm-sand/30">
-                  {isSignedIn ? (
-                    <UserButton
-                      appearance={{
-                        elements: {
-                          avatarBox: "w-8 h-8",
-                        },
-                      }}
-                    />
-                  ) : (
-                    <Link
-                      href="/sign-in"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="inline-flex items-center gap-2 text-parchment bg-charcoal px-4 py-2 rounded-full hover:bg-charcoal/85 transition-colors"
-                    >
-                      <LogIn className="w-3.5 h-3.5" /> Sign In
-                    </Link>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
+      <AppNav />
 
       {/* Header */}
       <section className="pt-28 sm:pt-32 pb-8 sm:pb-12 px-4 sm:px-6">
@@ -357,7 +232,7 @@ export default function SuggestionsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex items-center gap-4 text-[10px] text-terracotta tracking-[0.3em] font-semibold uppercase mb-6"
+            className="flex items-center gap-4 text-xs text-terracotta font-semibold mb-6"
           >
             <span className="w-8 h-px bg-terracotta" />
             <Sparkles className="w-3.5 h-3.5" />
@@ -367,10 +242,10 @@ export default function SuggestionsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tighter text-charcoal leading-[1] mb-4 sm:mb-6"
+            className="text-3xl sm:text-4xl md:text-6xl tracking-tighter text-charcoal leading-[1] mb-4 sm:mb-6"
           >
             Personalized{" "}
-            <span className="font-medium text-muted-clay italic">
+            <span className="text-terracotta">
               exercise plan.
             </span>
           </motion.h1>
@@ -378,7 +253,7 @@ export default function SuggestionsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-base sm:text-lg text-driftwood font-light max-w-xl leading-relaxed"
+            className="text-base sm:text-lg text-driftwood max-w-xl leading-relaxed"
           >
             Tell us about yourself and your goals. Our AI will craft a tailored
             weekly exercise plan just for you.
@@ -410,7 +285,7 @@ export default function SuggestionsPage() {
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[10px] tracking-[0.2em] uppercase text-driftwood font-semibold mb-2">
+                        <label className="block text-xs text-driftwood font-semibold mb-2">
                           Age
                         </label>
                         <input
@@ -424,7 +299,7 @@ export default function SuggestionsPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] tracking-[0.2em] uppercase text-driftwood font-semibold mb-2">
+                        <label className="block text-xs text-driftwood font-semibold mb-2">
                           Gender
                         </label>
                         <select
@@ -443,7 +318,7 @@ export default function SuggestionsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-[10px] tracking-[0.2em] uppercase text-driftwood font-semibold mb-2">
+                        <label className="block text-xs text-driftwood font-semibold mb-2">
                           Height (cm)
                         </label>
                         <input
@@ -457,7 +332,7 @@ export default function SuggestionsPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] tracking-[0.2em] uppercase text-driftwood font-semibold mb-2">
+                        <label className="block text-xs text-driftwood font-semibold mb-2">
                           Weight (kg)
                         </label>
                         <input
@@ -488,7 +363,7 @@ export default function SuggestionsPage() {
                           onClick={() =>
                             setFormData({ ...formData, fitnessLevel: level })
                           }
-                          className={`px-5 py-2.5 rounded-full text-xs tracking-[0.15em] uppercase font-semibold border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-xs font-semibold border transition-all duration-300 ${
                             formData.fitnessLevel === level
                               ? "bg-terracotta text-parchment border-terracotta"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-terracotta/50"
@@ -507,7 +382,7 @@ export default function SuggestionsPage() {
                         3
                       </span>
                       Your Goals
-                      <span className="text-[10px] text-warm-sand font-normal tracking-wider">
+                      <span className="text-xs text-warm-sand font-normal">
                         (select multiple)
                       </span>
                     </h2>
@@ -516,7 +391,7 @@ export default function SuggestionsPage() {
                         <button
                           key={goal}
                           onClick={() => handleGoalToggle(goal)}
-                          className={`px-5 py-2.5 rounded-full text-xs tracking-[0.1em] uppercase font-medium border transition-all duration-300 ${
+                          className={`px-5 py-2.5 rounded-full text-xs font-medium border transition-all duration-300 ${
                             formData.goals.includes(goal)
                               ? "bg-sage text-parchment border-sage"
                               : "bg-parchment text-driftwood border-warm-sand/50 hover:border-sage/50"
@@ -538,7 +413,7 @@ export default function SuggestionsPage() {
                     </h2>
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-[10px] tracking-[0.2em] uppercase text-driftwood font-semibold mb-2">
+                        <label className="block text-xs text-driftwood font-semibold mb-2">
                           Pre-existing conditions or injuries
                         </label>
                         <textarea
@@ -555,7 +430,7 @@ export default function SuggestionsPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] tracking-[0.2em] uppercase text-driftwood font-semibold mb-2">
+                        <label className="block text-xs text-driftwood font-semibold mb-2">
                           Exercise preferences
                         </label>
                         <textarea
@@ -584,13 +459,13 @@ export default function SuggestionsPage() {
                       {loading ? (
                         <span className="flex items-center gap-3 mx-auto">
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          <span className="tracking-[0.15em] uppercase text-xs font-semibold">
+                          <span className="tracking-[0.15em] text-xs font-semibold">
                             Generating Plan...
                           </span>
                         </span>
                       ) : (
                         <>
-                          <span className="relative z-10 tracking-[0.15em] uppercase text-xs font-semibold flex items-center gap-2">
+                          <span className="relative z-10 text-xs font-semibold flex items-center gap-2">
                             <Sparkles className="w-4 h-4" />
                             Generate My Plan
                           </span>
@@ -600,7 +475,7 @@ export default function SuggestionsPage() {
                         </>
                       )}
                     </button>
-                    <p className="text-[10px] text-warm-sand tracking-wider">
+                    <p className="text-xs text-warm-sand">
                       Results are AI-generated and not medical advice
                     </p>
                   </div>
@@ -619,7 +494,7 @@ export default function SuggestionsPage() {
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => setStep("form")}
-                    className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-driftwood hover:text-charcoal transition-colors duration-300 font-medium"
+                    className="flex items-center gap-2 text-xs text-driftwood hover:text-charcoal transition-colors duration-300 font-medium"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     Modify Inputs
@@ -628,13 +503,13 @@ export default function SuggestionsPage() {
                   {isSignedIn && (
                     <div className="flex items-center gap-3">
                       {planSaved ? (
-                        <span className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-sage font-semibold">
+                        <span className="flex items-center gap-2 text-xs text-sage font-semibold">
                           <Check className="w-4 h-4" /> Saved
                         </span>
                       ) : (
                         <button
                           onClick={() => setShowSaveDialog(true)}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-charcoal text-parchment text-xs tracking-[0.15em] uppercase font-semibold hover:bg-charcoal/85 transition-colors duration-300 shadow-md"
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-charcoal text-parchment text-xs font-semibold hover:bg-charcoal/85 transition-colors duration-300 shadow-md"
                         >
                           <Save className="w-4 h-4" />
                           Save Plan
@@ -666,7 +541,7 @@ export default function SuggestionsPage() {
                         <button
                           onClick={handleSavePlan}
                           disabled={savingPlan}
-                          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-terracotta text-parchment text-xs tracking-[0.15em] uppercase font-semibold hover:bg-charcoal transition-colors duration-300 disabled:opacity-50"
+                          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-terracotta text-parchment text-xs font-semibold hover:bg-charcoal transition-colors duration-300 disabled:opacity-50"
                         >
                           {savingPlan ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -677,7 +552,7 @@ export default function SuggestionsPage() {
                         </button>
                         <button
                           onClick={() => setShowSaveDialog(false)}
-                          className="px-4 py-3 rounded-xl text-xs tracking-[0.15em] uppercase font-medium text-driftwood hover:text-charcoal border border-warm-sand/40 hover:border-warm-sand transition-colors duration-300"
+                          className="px-4 py-3 rounded-xl text-xs font-medium text-driftwood hover:text-charcoal border border-warm-sand/40 hover:border-warm-sand transition-colors duration-300"
                         >
                           Cancel
                         </button>
@@ -715,7 +590,7 @@ export default function SuggestionsPage() {
                           Your Personalized Plan
                         </h2>
                       </div>
-                      <p className="text-driftwood font-light leading-relaxed">
+                      <p className="text-driftwood leading-relaxed">
                         {results.summary}
                       </p>
                     </motion.div>
@@ -749,7 +624,7 @@ export default function SuggestionsPage() {
                             className="w-full flex items-center justify-between p-6 hover:bg-warm-sand/10 transition-colors duration-300"
                           >
                             <div className="flex items-center gap-4">
-                              <span className="text-[10px] font-mono tracking-widest text-sage">
+                              <span className="text-xs font-mono text-sage">
                                 {day.day}
                               </span>
                               <span className="text-charcoal font-medium tracking-wide">
@@ -773,7 +648,7 @@ export default function SuggestionsPage() {
                                 className="overflow-hidden"
                               >
                                 <div className="px-6 pb-6 space-y-3">
-                                  <div className="text-[10px] tracking-widest uppercase text-warm-sand mb-2">
+                                  <div className="text-xs text-warm-sand mb-2">
                                     Rest: {day.restPeriod}
                                   </div>
                                   {day.exercises?.map((ex, j) => (
@@ -786,12 +661,12 @@ export default function SuggestionsPage() {
                                           {ex.name}
                                         </p>
                                         {ex.notes && (
-                                          <p className="text-driftwood text-xs mt-1 font-light">
+                                          <p className="text-driftwood text-xs mt-1">
                                             {ex.notes}
                                           </p>
                                         )}
                                       </div>
-                                      <div className="flex items-center gap-4 text-[10px] tracking-widest uppercase text-sage font-mono shrink-0">
+                                      <div className="flex items-center gap-4 text-xs text-sage font-mono shrink-0">
                                         {ex.sets && <span>{ex.sets} sets</span>}
                                         {ex.reps && <span>{ex.reps} reps</span>}
                                         {ex.duration && (
@@ -826,7 +701,7 @@ export default function SuggestionsPage() {
                           {results.tips.map((tip, i) => (
                             <li
                               key={i}
-                              className="flex items-start gap-3 text-sm text-driftwood font-light leading-relaxed"
+                              className="flex items-start gap-3 text-sm text-driftwood leading-relaxed"
                             >
                               <span className="w-1.5 h-1.5 rounded-full bg-sage mt-2 shrink-0" />
                               {tip}
@@ -854,7 +729,7 @@ export default function SuggestionsPage() {
                           {results.cautions.map((caution, i) => (
                             <li
                               key={i}
-                              className="flex items-start gap-3 text-sm text-driftwood font-light leading-relaxed"
+                              className="flex items-start gap-3 text-sm text-driftwood leading-relaxed"
                             >
                               <span className="w-1.5 h-1.5 rounded-full bg-terracotta mt-2 shrink-0" />
                               {caution}
@@ -879,7 +754,7 @@ export default function SuggestionsPage() {
                               Track These in FitVision
                             </h2>
                           </div>
-                          <p className="text-driftwood text-sm font-light mb-4">
+                          <p className="text-driftwood text-sm mb-4">
                             These exercises from your plan are available for
                             real-time AI tracking in the studio:
                           </p>
@@ -888,7 +763,7 @@ export default function SuggestionsPage() {
                               <Link
                                 key={i}
                                 href={`/tracker?exercise=${encodeURIComponent(ex)}`}
-                                className="group px-5 py-2.5 rounded-full bg-parchment text-xs tracking-[0.1em] uppercase font-semibold text-charcoal border border-warm-sand/50 hover:border-terracotta hover:text-terracotta transition-all duration-300 flex items-center gap-2"
+                                className="group px-5 py-2.5 rounded-full bg-parchment text-xs font-semibold text-charcoal border border-warm-sand/50 hover:border-terracotta hover:text-terracotta transition-all duration-300 flex items-center gap-2"
                               >
                                 {ex}
                                 <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -900,7 +775,7 @@ export default function SuggestionsPage() {
 
                     {/* Disclaimer note */}
                     <div className="text-center pt-4">
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-warm-sand">
+                      <p className="text-xs text-warm-sand">
                         AI-generated suggestions — not a substitute for
                         professional medical advice.{" "}
                         <Link
@@ -933,7 +808,7 @@ export default function SuggestionsPage() {
                   My Saved Plans
                 </h2>
                 {savedPlans.length > 0 && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-warm-sand/40 text-driftwood text-[10px] tracking-[0.15em] uppercase font-semibold">
+                  <span className="px-2.5 py-0.5 rounded-full bg-warm-sand/40 text-driftwood text-xs font-semibold">
                     {savedPlans.length}
                   </span>
                 )}
@@ -961,7 +836,7 @@ export default function SuggestionsPage() {
                       </div>
                     ) : savedPlans.length === 0 ? (
                       <div className="text-center py-10">
-                        <p className="text-driftwood text-sm font-light">
+                        <p className="text-driftwood text-sm">
                           No saved plans yet. Generate a plan above and save it!
                         </p>
                       </div>
@@ -986,10 +861,10 @@ export default function SuggestionsPage() {
                                   {plan.name || "Untitled Plan"}
                                 </h3>
                               </div>
-                              <p className="text-driftwood text-xs font-light line-clamp-2">
+                              <p className="text-driftwood text-xs line-clamp-2">
                                 {plan.summary || "No summary available"}
                               </p>
-                              <p className="text-warm-sand text-[10px] tracking-[0.15em] uppercase mt-1.5">
+                              <p className="text-warm-sand text-xs mt-1.5">
                                 {new Date(plan.created_at).toLocaleDateString(
                                   undefined,
                                   {
@@ -1003,20 +878,20 @@ export default function SuggestionsPage() {
                             <div className="flex items-center gap-2 flex-shrink-0">
                               <Link
                                 href={`/plan-workout?plan_id=${plan.id}`}
-                                className="px-4 py-2 rounded-xl text-[10px] tracking-[0.12em] uppercase font-semibold text-parchment bg-terracotta hover:bg-charcoal transition-colors duration-300 flex items-center gap-1.5"
+                                className="px-4 py-2 rounded-xl text-xs font-semibold text-parchment bg-terracotta hover:bg-charcoal transition-colors duration-300 flex items-center gap-1.5"
                               >
                                 <Dumbbell className="w-3.5 h-3.5" /> Workout
                               </Link>
                               <button
                                 onClick={() => handleLoadPlan(plan)}
-                                className="px-4 py-2 rounded-xl text-[10px] tracking-[0.12em] uppercase font-semibold text-charcoal border border-warm-sand/40 hover:border-charcoal transition-colors duration-300"
+                                className="px-4 py-2 rounded-xl text-xs font-semibold text-charcoal border border-warm-sand/40 hover:border-charcoal transition-colors duration-300"
                               >
                                 View
                               </button>
                               {!plan.is_active && (
                                 <button
                                   onClick={() => handleActivatePlan(plan.id)}
-                                  className="px-4 py-2 rounded-xl text-[10px] tracking-[0.12em] uppercase font-semibold text-sage border border-sage/30 hover:bg-sage hover:text-parchment transition-all duration-300"
+                                  className="px-4 py-2 rounded-xl text-xs font-semibold text-sage border border-sage/30 hover:bg-sage hover:text-parchment transition-all duration-300"
                                   title="Set as active plan"
                                 >
                                   <Star className="w-3.5 h-3.5" />
@@ -1024,7 +899,7 @@ export default function SuggestionsPage() {
                               )}
                               <button
                                 onClick={() => handleDeletePlan(plan.id)}
-                                className="px-3 py-2 rounded-xl text-[10px] text-driftwood border border-warm-sand/30 hover:border-red-300 hover:text-red-400 transition-all duration-300"
+                                className="px-3 py-2 rounded-xl text-xs text-driftwood border border-warm-sand/30 hover:border-red-300 hover:text-red-400 transition-all duration-300"
                                 title="Delete plan"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1043,32 +918,7 @@ export default function SuggestionsPage() {
       )}
 
       {/* Footer */}
-      <footer className="bg-parchment py-10 sm:py-16 px-4 sm:px-8 border-t border-warm-sand/50">
-        <div className="max-w-[75rem] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-nobg.png"
-              alt="FitVision"
-              width={120}
-              height={32}
-              className="h-7 sm:h-8 w-auto"
-            />
-            <span className="font-serif text-lg sm:text-xl font-light tracking-wide">
-              FitVision
-            </span>
-          </Link>
-          <p className="text-[10px] font-medium text-driftwood tracking-[0.2em] uppercase text-center">
-            © {new Date().getFullYear()} FitVision. Cultivating mindful
-            movement.
-          </p>
-          <Link
-            href="/disclaimer"
-            className="text-[10px] tracking-[0.2em] uppercase text-sage hover:text-terracotta transition-colors duration-300"
-          >
-            Disclaimer
-          </Link>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

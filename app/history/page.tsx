@@ -2,12 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
-  Menu,
-  X,
   History,
   Calendar,
   Clock,
@@ -19,7 +16,9 @@ import {
   Flame,
   Trash2,
 } from "lucide-react";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import { AppNav } from "../components/AppNav";
+import { SiteFooter } from "../components/SiteFooter";
 import { useRouter } from "next/navigation";
 
 interface WorkoutExercise {
@@ -81,7 +80,6 @@ function formatTime(dateStr: string): string {
 export default function HistoryPage() {
   const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -145,121 +143,16 @@ export default function HistoryPage() {
 
   if (!isLoaded || !isSignedIn) {
     return (
-      <div className="min-h-screen bg-parchment flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-parchment flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-sage border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
+    <div className="min-h-[100dvh] bg-parchment text-charcoal font-sans selection:bg-terracotta selection:text-parchment">
       {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-0 w-full z-50 px-4 sm:px-8 py-4 sm:py-6 backdrop-blur-md bg-parchment/80 border-b border-warm-sand/50"
-      >
-        <div className="max-w-[90rem] mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-nobg.png"
-              alt="FitVision"
-              width={120}
-              height={32}
-              className="h-7 sm:h-8 w-auto"
-            />
-            <span className="font-serif text-lg sm:text-xl font-light tracking-wide">
-              FitVision
-            </span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-6 lg:gap-10 text-xs tracking-[0.2em] uppercase font-medium">
-            <Link
-              href="/dashboard"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/#philosophy"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Philosophy
-            </Link>
-            <Link
-              href="/#process"
-              className="text-driftwood hover:text-charcoal transition-colors duration-300"
-            >
-              Method
-            </Link>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8",
-                },
-              }}
-            />
-          </div>
-
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-charcoal"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
-            >
-              <div className="flex flex-col gap-4 pt-6 pb-4 text-xs tracking-[0.2em] uppercase font-medium">
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/#philosophy"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Philosophy
-                </Link>
-                <Link
-                  href="/#process"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-driftwood hover:text-charcoal transition-colors py-1"
-                >
-                  Method
-                </Link>
-                <div className="pt-2 border-t border-warm-sand/30">
-                  <UserButton
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-8 h-8",
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
+      <AppNav />
 
       {/* Header */}
       <section className="pt-28 sm:pt-36 pb-6 sm:pb-10 px-4 sm:px-6">
@@ -269,17 +162,17 @@ export default function HistoryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 text-[10px] text-sage tracking-[0.3em] font-semibold uppercase mb-4">
+            <div className="flex items-center gap-4 text-xs text-sage font-semibold mb-4">
               <span className="w-8 h-px bg-sage"></span>
               <span>Training Log</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tighter text-charcoal leading-[1] mb-3 sm:mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl tracking-tighter text-charcoal leading-[1] mb-3 sm:mb-4">
               Workout{" "}
-              <span className="font-medium text-muted-clay italic">
+              <span className="text-terracotta">
                 history.
               </span>
             </h1>
-            <p className="text-base sm:text-lg text-driftwood font-light max-w-lg leading-relaxed">
+            <p className="text-base sm:text-lg text-driftwood max-w-lg leading-relaxed">
               Every rep tracked, every session remembered.
             </p>
           </motion.div>
@@ -324,11 +217,11 @@ export default function HistoryPage() {
                 >
                   <div className="flex items-center gap-2 text-sage mb-2">
                     {stat.icon}
-                    <span className="text-[10px] tracking-widest uppercase font-semibold">
+                    <span className="text-xs font-semibold">
                       {stat.label}
                     </span>
                   </div>
-                  <p className="text-2xl sm:text-3xl font-light tracking-tighter text-charcoal">
+                  <p className="text-2xl sm:text-3xl tracking-tighter text-charcoal">
                     {stat.value}
                   </p>
                 </div>
@@ -355,10 +248,10 @@ export default function HistoryPage() {
               <div className="w-16 h-16 rounded-2xl bg-linen flex items-center justify-center mx-auto mb-6">
                 <History className="w-8 h-8 text-warm-sand" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-light tracking-tight text-charcoal mb-3">
+              <h3 className="text-xl sm:text-2xl tracking-tight text-charcoal mb-3">
                 No workouts yet
               </h3>
-              <p className="text-driftwood font-light mb-8 max-w-sm mx-auto">
+              <p className="text-driftwood mb-8 max-w-sm mx-auto">
                 Complete a workout in the Studio and it will appear here with
                 all your stats.
               </p>
@@ -402,7 +295,7 @@ export default function HistoryPage() {
                             <span className="text-sm sm:text-base font-medium text-charcoal">
                               {formatDate(session.started_at)}
                             </span>
-                            <span className="text-[10px] tracking-widest uppercase font-semibold px-2 py-0.5 rounded-full bg-parchment text-driftwood border border-warm-sand/40">
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-parchment text-driftwood border border-warm-sand/40">
                               {session.source === "ai_plan"
                                 ? "AI Plan"
                                 : "Manual"}
@@ -436,7 +329,7 @@ export default function HistoryPage() {
                               {exerciseTypes.map((type) => (
                                 <span
                                   key={type}
-                                  className="px-2.5 py-0.5 rounded-full bg-parchment text-[10px] tracking-widest uppercase text-driftwood border border-warm-sand/30"
+                                  className="px-2.5 py-0.5 rounded-full bg-parchment text-xs text-driftwood border border-warm-sand/30"
                                 >
                                   {type}
                                 </span>
@@ -539,32 +432,7 @@ export default function HistoryPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-parchment py-10 sm:py-16 px-4 sm:px-8 border-t border-warm-sand/50">
-        <div className="max-w-[75rem] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-nobg.png"
-              alt="FitVision"
-              width={120}
-              height={32}
-              className="h-7 sm:h-8 w-auto"
-            />
-            <span className="font-serif text-lg sm:text-xl font-light tracking-wide">
-              FitVision
-            </span>
-          </Link>
-          <p className="text-[10px] font-medium text-driftwood tracking-[0.2em] uppercase text-center">
-            © {new Date().getFullYear()} FitVision. Cultivating mindful
-            movement.
-          </p>
-          <Link
-            href="/disclaimer"
-            className="text-[10px] tracking-[0.2em] uppercase text-sage hover:text-terracotta transition-colors duration-300"
-          >
-            Disclaimer
-          </Link>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

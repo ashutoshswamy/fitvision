@@ -199,7 +199,7 @@ export default function TrackerPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-charcoal flex items-center justify-center">
+        <div className="min-h-[100dvh] bg-charcoal flex items-center justify-center">
           <div className="w-6 h-6 border-2 border-terracotta border-t-transparent rounded-full animate-spin" />
         </div>
       }
@@ -360,7 +360,7 @@ function TrackerContent() {
   );
 
   return (
-    <div className="min-h-screen bg-charcoal text-parchment font-sans selection:bg-sage selection:text-parchment">
+    <div className="min-h-[100dvh] bg-charcoal text-parchment font-sans selection:bg-sage selection:text-parchment">
       {/* Top Navigation Bar */}
       <motion.nav
         initial={{ opacity: 0, y: -10 }}
@@ -376,11 +376,11 @@ function TrackerContent() {
             height={32}
             className="h-6 sm:h-8 w-auto"
           />
-          <span className="font-serif text-lg sm:text-xl font-light tracking-wide">
+          <span className="font-display font-semibold text-lg sm:text-xl tracking-wide">
             FitVision
           </span>
         </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm tracking-widest uppercase font-medium">
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           <Link
             href={isSignedIn ? "/dashboard" : "/sign-in"}
             className="text-warm-sand hover:text-parchment transition-colors"
@@ -439,7 +439,7 @@ function TrackerContent() {
             transition={{ duration: 0.2 }}
             className="fixed top-14 left-0 right-0 z-50 bg-charcoal/95 backdrop-blur-md border-b border-driftwood/30 md:hidden"
           >
-            <div className="flex flex-col gap-3 px-6 py-4 text-xs tracking-[0.2em] uppercase font-medium">
+            <div className="flex flex-col gap-3 px-6 py-4 text-xs font-medium">
               <Link
                 href={isSignedIn ? "/dashboard" : "/sign-in"}
                 onClick={() => setMobileMenuOpen(false)}
@@ -484,7 +484,7 @@ function TrackerContent() {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="pt-16 sm:pt-24 pb-4 sm:pb-8 px-3 sm:px-8 min-h-screen md:h-screen w-full flex flex-col md:flex-row gap-4 sm:gap-6">
+      <main className="pt-16 sm:pt-24 pb-4 sm:pb-8 px-3 sm:px-8 min-h-[100dvh] md:h-[100dvh] w-full flex flex-col md:flex-row gap-4 sm:gap-6">
         {/* Camera Feed - Takes up remaining space */}
         <section className="flex-1 relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-driftwood/40 min-h-[50vh] md:min-h-0">
           <CameraTracker
@@ -495,7 +495,7 @@ function TrackerContent() {
           {/* Plan progress — top left (plan mode) or Precision (free mode) */}
           {isPlanMode ? (
             <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 bg-charcoal/60 backdrop-blur-md rounded-lg px-3 py-1.5 border border-parchment/10">
-              <span className="text-[10px] tracking-widest uppercase text-warm-sand/70 font-semibold">
+              <span className="text-xs text-warm-sand/70 font-semibold">
                 Plan Progress
               </span>
               <p className="text-sm font-medium text-parchment leading-tight">
@@ -504,13 +504,13 @@ function TrackerContent() {
                   /{planExercises.length}
                 </span>
               </p>
-              <p className="text-[10px] text-warm-sand/80 mt-0.5 leading-tight max-w-[120px] truncate">
+              <p className="text-xs text-warm-sand/80 mt-0.5 leading-tight max-w-[120px] truncate">
                 {planExercises[planExerciseIndex]?.name}
               </p>
             </div>
           ) : (
             <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 bg-charcoal/60 backdrop-blur-md rounded-lg px-3 py-1.5 border border-parchment/10">
-              <span className="text-[10px] tracking-widest uppercase text-warm-sand/70 font-semibold">
+              <span className="text-xs text-warm-sand/70 font-semibold">
                 Precision
               </span>
               <p className="text-sm font-medium text-parchment leading-tight">
@@ -523,7 +523,7 @@ function TrackerContent() {
           {/* Reps, Sets counter & Save — top right */}
           <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-2">
             <div className="bg-charcoal/60 backdrop-blur-md rounded-lg px-3 py-1.5 border border-parchment/10 text-center">
-              <span className="text-[10px] tracking-widest uppercase text-warm-sand/70 font-semibold">
+              <span className="text-xs text-warm-sand/70 font-semibold">
                 Reps
               </span>
               <p className="text-sm font-medium text-parchment leading-tight">
@@ -531,7 +531,7 @@ function TrackerContent() {
               </p>
             </div>
             <div className="bg-charcoal/60 backdrop-blur-md rounded-lg px-2 py-1.5 border border-parchment/10 flex items-center gap-1.5">
-              <span className="text-[10px] tracking-widest uppercase text-warm-sand/70 font-semibold">
+              <span className="text-xs text-warm-sand/70 font-semibold">
                 Sets
               </span>
               <button
@@ -544,7 +544,7 @@ function TrackerContent() {
                 {sets}
               </span>
               {isPlanMode && (
-                <span className="text-[10px] text-warm-sand/50">
+                <span className="text-xs text-warm-sand/50">
                   /{planExercises[planExerciseIndex]?.targetSets}
                 </span>
               )}
@@ -559,7 +559,7 @@ function TrackerContent() {
               <button
                 onClick={handleSaveWorkout}
                 disabled={saving || trackerData.reps === 0}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] tracking-widest uppercase font-semibold backdrop-blur-md border border-parchment/10 transition-all duration-300 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-md border border-parchment/10 transition-all duration-300 ${
                   saved
                     ? "bg-sage/80 text-parchment"
                     : saving
@@ -601,11 +601,11 @@ function TrackerContent() {
                       <SkipForward className="w-10 h-10 text-terracotta mx-auto" />
                     )}
                   </div>
-                  <p className="text-xl sm:text-2xl font-serif font-light text-parchment leading-snug max-w-sm mx-auto">
+                  <p className="text-xl sm:text-2xl font-display font-semibold text-parchment leading-snug max-w-sm mx-auto">
                     {transitionMessage}
                   </p>
                   {!planCompleted && (
-                    <p className="text-[10px] tracking-widest uppercase text-warm-sand/60 mt-3">
+                    <p className="text-xs text-warm-sand/60 mt-3">
                       Switching in a moment...
                     </p>
                   )}
@@ -618,7 +618,7 @@ function TrackerContent() {
         {/* Mobile metrics toggle */}
         <button
           onClick={() => setShowMobileMetrics(!showMobileMetrics)}
-          className="md:hidden flex items-center justify-center gap-2 py-3 bg-charcoal/80 backdrop-blur-sm rounded-xl border border-driftwood/30 text-parchment text-xs tracking-widest uppercase font-medium"
+          className="md:hidden flex items-center justify-center gap-2 py-3 bg-charcoal/80 backdrop-blur-sm rounded-xl border border-driftwood/30 text-parchment text-xs font-medium"
         >
           {showMobileMetrics ? (
             <>

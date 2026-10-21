@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, DM_Sans, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, DM_Sans, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { CookieBanner } from "./components/CookieBanner";
 import "./globals.css";
 
 const jsonLd = {
@@ -28,11 +29,10 @@ const jsonLd = {
   ],
 };
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  weight: ["300", "400"],
-  style: ["normal", "italic"],
+  weight: ["500", "600"],
 });
 
 const dmSans = DM_Sans({
@@ -50,8 +50,6 @@ const geistMono = Geist_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
 };
 
@@ -130,16 +128,18 @@ export const metadata: Metadata = {
 };
 
 const clerkAppearance = {
+  // lets Tailwind utilities in `elements` override Clerk's own styles (layer order set in globals.css)
+  cssLayerName: "clerk",
   elements: {
     formButtonPrimary:
-      "bg-terracotta hover:bg-charcoal text-parchment rounded-xl shadow-md transition-all duration-500 text-xs uppercase tracking-[0.15em] font-semibold",
+      "bg-none bg-charcoal hover:bg-terracotta text-parchment rounded-full shadow-none transition-colors duration-300 text-sm font-semibold normal-case",
     card: "shadow-xl shadow-charcoal/5 rounded-2xl",
     headerTitle: "font-serif text-charcoal",
     headerSubtitle: "text-driftwood",
     socialButtonsBlockButton:
-      "border border-warm-sand/40 text-charcoal hover:bg-warm-sand/20 rounded-xl transition-all duration-300",
+      "border border-driftwood/40 text-charcoal hover:bg-linen rounded-full transition-colors duration-300",
     formFieldInput:
-      "border-warm-sand/40 text-charcoal rounded-xl focus:border-terracotta focus:ring-terracotta/20",
+      "border border-driftwood/40 text-charcoal rounded-xl focus:border-terracotta focus:ring-terracotta/25 placeholder:text-driftwood/70",
     footerActionLink:
       "text-terracotta hover:text-charcoal transition-colors duration-300",
     userButtonPopoverCard:
@@ -173,13 +173,14 @@ export default function RootLayout({
     <ClerkProvider appearance={clerkAppearance}>
       <html lang="en">
         <body
-          className={`${cormorant.variable} ${dmSans.variable} ${geistMono.variable} antialiased bg-parchment text-charcoal`}
+          className={`${bricolage.variable} ${dmSans.variable} ${geistMono.variable} antialiased bg-parchment text-charcoal`}
         >
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           />
           {children}
+          <CookieBanner />
         </body>
       </html>
     </ClerkProvider>
